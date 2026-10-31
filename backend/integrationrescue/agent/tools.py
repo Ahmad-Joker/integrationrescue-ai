@@ -18,7 +18,7 @@ from typing import Any, Literal
 from urllib.parse import urlsplit
 
 import httpx
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 from ..security.policy import PolicyViolation, redact, safe_relpath
 from ..simulators.sync_service import run_handler
@@ -130,12 +130,31 @@ class Diagnosis(Strict):
 
 
 class Edit(Strict):
-    op: Literal["json_set", "replace"]
-    path: str = Field(max_length=300)
-    key_path: list[str] | None = None
-    value: Any = None
-    old: str | None = None
-    new: str | None = None
+    """One bounded edit. Each op uses its own fields; mixing them is rejected with a message the model can act on."""
+
+    op: Literal["json_set", "replace"] = Field(
+        description="json_set: set one key in a JSON file (uses key_path + value). "
+                    "replace: replace one exact text snippet in a file (uses old + new).")
+    path: str = Field(max_length=300, description="Repository-relative file path")
+    key_path: list[str] | None = Field(None, description="json_set only: keys from the root to the key to set, "
+                                                         'e.g. ["price_plan_map", "price_x"]')
+    value: Any = Field(None, description='json_set only: the new value, e.g. "pro"')
+    old: str | None = Field(None, description="replace only: exact current text, occurring once in the file")
+    new: str | None = Field(None, description="replace only: replacement text")
+
+    @model_validator(mode="after")
+    def _fields_match_op(self) -> Edit:
+        if self.op == "json_set":
+            if self.old is not None or self.new is not None:
+                raise ValueError("json_set takes key_path and value, not old/new (put the new value in 'value')")
+            if not self.key_path or self.value is None:
+                raise ValueError("json_set requires a non-empty key_path and a non-null value")
+        else:
+            if self.key_path is not None or self.value is not None:
+                raise ValueError("replace takes old and new, not key_path/value")
+            if not self.old or self.new is None:
+                raise ValueError("replace requires non-empty 'old' (exact current text) and 'new'")
+        return self
 
 
 class PatchProposal(Strict):

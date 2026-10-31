@@ -85,6 +85,8 @@ def review_patch(repo: Path, edits: list[dict[str, Any]]) -> PatchReview:
         except PolicyViolation as exc:
             return PatchReview(False, "high", [str(exc)])
         op = e.get("op")
+        if op == "replace" and not (isinstance(e.get("old"), str) and e["old"] and isinstance(e.get("new"), str)):
+            return PatchReview(False, "high", ["replace requires string 'old' (non-empty) and 'new'"])
         if op == "json_set":
             if not isinstance(e.get("key_path"), list) or not e["key_path"]:
                 return PatchReview(False, "high", ["json_set requires a non-empty key_path"])

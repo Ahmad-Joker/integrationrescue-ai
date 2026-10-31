@@ -16,3 +16,10 @@
   reached approval because pytest (needed by the sandbox) was only a dev dependency. Real product bug.
 - Fix 59e2a3a: pytest made a runtime dependency; missing test runner now escalates (new test); CI upgrades pip.
 - Local: 62 backend tests pass, ruff clean. Run 41154637560: PASS (backend and frontend).
+
+## 2026-10-31 — first live-model evaluations (Gemini free tier)
+- Run 1 (`eval_gemini_20261031_230613`): diagnosis 14/14, VERIFIED 2/12; found edit-schema ambiguity and an
+  orchestrator TypeError on malformed `replace` edits.
+- Fix: per-op Edit validation + policy guard; `test_edit_schema.py` (7 tests). Backend: 79 tests pass, ruff clean.
+- Run 2 (`eval_gemini_20261031_232820`): payment_entitlement 8/8 VERIFIED, 3 Google-side infra errors excluded,
+  false VERIFIED 0, duplicate charges 0.

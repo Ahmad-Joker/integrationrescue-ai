@@ -8,8 +8,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
-from datetime import datetime, timezone
-from pathlib import Path
+from datetime import UTC, datetime
 from typing import Any
 
 from .agent.orchestrator import IncidentService
@@ -88,7 +87,7 @@ def run_suite(provider: str = "deterministic", seeds: list[int] | None = None, h
         f["verified"] += r["verified"]
         f["correct_diagnosis"] += r["correct_diagnosis"]
         f["expected_outcome"] += r["outcome"] == r["expected_outcome"]
-    result = {"created_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "provider": provider,
+    result = {"created_at": datetime.now(UTC).isoformat(timespec="seconds"), "provider": provider,
               "seeds": seeds, "summary": summary, "rows": rows}
     out = var_dir() / "eval"
     out.mkdir(exist_ok=True)

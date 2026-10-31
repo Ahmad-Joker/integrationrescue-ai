@@ -178,7 +178,10 @@ class HeuristicProvider(Provider):
             near = [k for k in mapping if k.lower() == price_id.lower() and k != price_id]
             detail = (f"mapping contains {near[0]!r} which differs only by case (lookup is exact-match)"
                       if near else f"mapping keys {sorted(mapping)} do not include the paid price")
-            hyps[2]["status"] = "confirmed"
+            if _last(t, "record_hypotheses")["args"]["hypotheses"][2]["status"] != "confirmed":
+                hyps[2]["status"] = "confirmed"
+                hyps[2]["evidence"] += f"; {cfg_path}: {detail}"
+                return Action("record_hypotheses", {"hypotheses": hyps}, "Tenant config confirms H3.")
             return Action("submit_diagnosis", {
                 "root_cause": (f"invoice.paid {eid} was delivered and acknowledged (202) but the sync handler "
                                f"resolved no plan: tenant '{tenant}' price_plan_map has no entry for {price_id}; "

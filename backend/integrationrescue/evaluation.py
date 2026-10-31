@@ -17,6 +17,8 @@ from .scenarios import REGISTRY
 from .simulators.world import World
 from .verification import verify
 
+INFRA_ERROR_PREFIXES = ("model quota exhausted", "model call failed")
+
 
 def _score(svc: IncidentService, iid: str, duration: float) -> dict[str, Any]:
     inc = svc.store.get(iid)
@@ -31,6 +33,9 @@ def _score(svc: IncidentService, iid: str, duration: float) -> dict[str, Any]:
         diagnosed_ok = bool(diag) and expected_file in (diag.get("affected_files") or [])
     recheck = verify(d["world_path"], d["contract"]).outcome
     w = World(d["world_path"])
+    # Quota/network failures say nothing about the agent; they are reported, not scored as wrong answers.
+    infra = next((e["summary"] for e in svc.store.timeline(iid) if e["kind"] == "PROVIDER_ERROR"
+                  and e["summary"].startswith(INFRA_ERROR_PREFIXES)), None)
     charges = len(w.query("SELECT * FROM charges WHERE invoice_id=? AND status='succeeded'",
                           (d["contract"]["invoice_id"],)))
     return {
@@ -48,6 +53,7 @@ def _score(svc: IncidentService, iid: str, duration: float) -> dict[str, Any]:
         "patch_attempts": len(d.get("attempts", [])),
         "duration_s": round(duration, 2),
         "usage": d.get("usage", {}),
+        "infra_error": infra,
     }
 
 
@@ -55,22 +61,30 @@ def run_suite(provider: str = "deterministic", seeds: list[int] | None = None, h
               families: list[str] | None = None) -> dict[str, Any]:
     svc = IncidentService()
     seeds = seeds or [101, 202]
-    rows = []
+    rows: list[dict[str, Any]] = []
+    stopped_early = None
     for fam in REGISTRY.values():
         if families and fam.name not in families:
             continue
         variants = [(v, False) for v in fam.variants] + ([(v, True) for v in fam.heldout_variants] if heldout else [])
         for variant, is_heldout in variants:
             for seed in seeds:
+                if stopped_early:
+                    break
                 t0 = time.perf_counter()
                 iid = svc.create_from_scenario(fam.name, variant, seed=seed, provider=provider, auto_approve=True)
                 svc.run(iid)
                 row = _score(svc, iid, time.perf_counter() - t0)
                 row["heldout"] = is_heldout
                 rows.append(row)
+                if (row["infra_error"] or "").startswith("model quota exhausted"):
+                    stopped_early = row["infra_error"]  # every later run would fail the same way
+    all_rows, rows = rows, [r for r in rows if not r["infra_error"]]
     n = len(rows) or 1
     summary = {
         "runs": len(rows),
+        "infra_errors": len(all_rows) - len(rows),
+        "stopped_early": stopped_early,
         "correct_diagnosis_rate": round(sum(r["correct_diagnosis"] for r in rows) / n, 3),
         "verified_rate": round(sum(r["verified"] for r in rows) / n, 3),
         "outcome_matches_expected_rate": round(sum(r["outcome"] == r["expected_outcome"] for r in rows) / n, 3),
@@ -88,7 +102,7 @@ def run_suite(provider: str = "deterministic", seeds: list[int] | None = None, h
         f["correct_diagnosis"] += r["correct_diagnosis"]
         f["expected_outcome"] += r["outcome"] == r["expected_outcome"]
     result = {"created_at": datetime.now(UTC).isoformat(timespec="seconds"), "provider": provider,
-              "seeds": seeds, "summary": summary, "rows": rows}
+              "seeds": seeds, "summary": summary, "rows": all_rows}
     out = var_dir() / "eval"
     out.mkdir(exist_ok=True)
     path = out / f"eval_{provider}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"

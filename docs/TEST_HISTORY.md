@@ -11,8 +11,8 @@
 | — | GitHub Actions | not run | no remote |
 | — | live Claude | not run | no credentials |
 
-## 2026-10-31 � first GitHub Actions runs
-- Run 41153893011: FAIL � backend `pip-audit` flagged the CI venv's bundled pip 25.0.1; frontend Playwright journey never
+## 2026-10-31 — first GitHub Actions runs
+- Run 41153893011: FAIL — backend `pip-audit` flagged the CI venv's bundled pip 25.0.1; frontend Playwright journey never
   reached approval because pytest (needed by the sandbox) was only a dev dependency. Real product bug.
 - Fix 59e2a3a: pytest made a runtime dependency; missing test runner now escalates (new test); CI upgrades pip.
 - Local: 62 backend tests pass, ruff clean. Run 41154637560: PASS (backend and frontend).

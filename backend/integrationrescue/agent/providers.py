@@ -1,6 +1,7 @@
 """Decision-making providers for the investigation loop.
 
 * ``ClaudeProvider``  - live LLM reasoning via the Anthropic Messages API (tool use).
+* ``GeminiProvider`` (gemini.py) - live LLM reasoning via the Gemini API (function calling).
 * ``HeuristicProvider`` - a deterministic rule-based troubleshooting baseline used for
   offline tests, CI and as the evaluation baseline. It is NOT an LLM and every run
   it produces is labelled ``mode=deterministic`` so it is never presented as live AI.
@@ -336,8 +337,12 @@ class ClaudeProvider(Provider):
 
 def make_provider(kind: str | None = None) -> Provider:
     kind = (kind or os.environ.get("IR_PROVIDER", "deterministic")).lower()
-    if kind in ("deterministic", "heuristic", "baseline"):
+    if kind in ("deterministic", "heuristic", "baseline", "heuristic-baseline"):
         return HeuristicProvider()
     if kind in ("claude", "anthropic", "live"):
         return ClaudeProvider()
+    if kind in ("gemini", "google"):
+        from .gemini import GeminiProvider  # noqa: PLC0415 - avoids a circular import
+
+        return GeminiProvider()
     raise ProviderError(f"unknown provider {kind}")

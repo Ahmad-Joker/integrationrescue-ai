@@ -171,7 +171,12 @@ const post = <T,>(path: string, body: unknown) =>
   req<T>(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 
 export const api = {
-  health: () => req<{ status: string; live_model_configured: boolean; version: string }>('/api/health'),
+  health: () => req<{
+      status: string
+      live_model_configured: boolean
+      live_providers?: Record<string, boolean>
+      version: string
+    }>('/api/health'),
   stats: () => req<Stats>('/api/stats'),
   incidents: () => req<IncidentRow[]>('/api/incidents'),
   incident: (id: string) => req<Incident>(`/api/incidents/${id}`),

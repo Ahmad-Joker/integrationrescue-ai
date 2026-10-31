@@ -14,5 +14,11 @@
   persistence; default `claude-opus-5-5`, effort `medium`, server-side fallbacks enabled.
 - **2026-10-31 — UI can only launch the deterministic eval** to prevent accidental model spend.
 - **2026-10-31 — Vite + React without a component library**; hash routing; CSS tokens with dark mode.
-- **2026-10-31 � Repository published as public** (founder's choice, overriding the private default) at
+- **2026-10-31 — Repository published as public** (founder's choice, overriding the private default) at
   https://github.com/Ahmad-Joker/integrationrescue-ai. Commits rewritten to the GitHub noreply email before the first push. No licence file yet.
+- **2026-10-31 — Gemini as the first live provider** (founder has a Gemini key, no Anthropic key, no budget). Plain
+  httpx against `generateContent`, same tools/policy/verifier as Claude. Default `gemini-2.5-flash`: the free tier allows
+  only 20 requests/day for `gemini-3.5-flash`, too few for one incident (~12–30 calls). No cost estimate is shown because
+  free-tier use is unbilled and paid rates were not verified.
+- **2026-10-31 — Repo `.env` is loaded at startup** (real env vars win); tests set `IR_SKIP_DOTENV`; child processes
+  never inherit it.

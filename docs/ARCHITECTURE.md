@@ -8,7 +8,7 @@
 ┌───────────────────────────────────────▼──────────────────────────────────────────┐
 │ FastAPI product API (api.py)                                                     │
 │   IncidentService ── _Run state machine (agent/orchestrator.py) ── Store (SQLite) │
-│        │  decides: Provider ──► ClaudeProvider (live) | HeuristicProvider (det.)  │
+│        │  decides: Provider ──► Gemini|ClaudeProvider (live) | Heuristic (det.)  │
 │        │  enforces: tools.execute (typed, phase-gated, redacted, budgeted)        │
 │        │            security.policy (paths, patch review)                          │
 │        │            sandbox (copy repo, apply edits, pytest, replay)               │
@@ -35,7 +35,9 @@
 - **Orchestrator** (`agent/orchestrator.py`): phases `intake → investigate → reproduce → patch → awaiting_approval →
   promote → verify_live → report → done`. Every step is checkpointed; promotion is idempotent and guarded by
   `done_steps`, so an interrupted run resumes without repeating side effects.
-- **Providers** (`agent/providers.py`): `ClaudeProvider` runs a manual Messages-API tool-use loop (append-only history,
+- **Providers** (`agent/providers.py`, `agent/gemini.py`): `GeminiProvider` calls `generateContent` with function
+  calling over plain httpx (key in a header, model turns kept verbatim so thought signatures round-trip, daily-quota
+  429s fail fast). `ClaudeProvider` runs a manual Messages-API tool-use loop (append-only history,
   every `tool_use` answered with a matching `tool_result`, call budget, refusal handling, server-side fallbacks);
   `HeuristicProvider` is a rule-based baseline following billing → webhook → sync → entitlement.
 - **Verifier** (`verification/verifier.py`): opens the environment read-only, derives the expected plan from the paid

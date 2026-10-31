@@ -114,7 +114,7 @@ const FAULTS: [string, string][] = [
 
 export function NewIncident() {
   const [scenarios, setScenarios] = useState<Scenario[]>([])
-  const [live, setLive] = useState(false)
+  const [live, setLive] = useState<Record<string, boolean>>({})
   const [family, setFamily] = useState('payment_entitlement')
   const [variant, setVariant] = useState('')
   const [seed, setSeed] = useState(42)
@@ -127,7 +127,7 @@ export function NewIncident() {
 
   useEffect(() => {
     api.scenarios().then(setScenarios).catch((e) => setError(String(e)))
-    api.health().then((h) => setLive(h.live_model_configured)).catch(() => undefined)
+    api.health().then((h) => setLive(h.live_providers ?? {})).catch(() => undefined)
   }, [])
   const fam = scenarios.find((s) => s.family === family)
   const variants = fam ? [...fam.variants, ...fam.heldout_variants] : []
@@ -182,8 +182,11 @@ export function NewIncident() {
           <label htmlFor="provider">Decision maker</label>
           <select id="provider" value={provider} onChange={(e) => setProvider(e.target.value)}>
             <option value="deterministic">Deterministic baseline (offline, no LLM)</option>
-            <option value="claude" disabled={!live}>
-              Live AI agent (Claude){live ? '' : ' — no API credentials configured'}
+            <option value="gemini" disabled={!live.gemini}>
+              Live AI agent (Gemini){live.gemini ? '' : ' — no API key configured'}
+            </option>
+            <option value="claude" disabled={!live.claude}>
+              Live AI agent (Claude){live.claude ? '' : ' — no API key configured'}
             </option>
           </select>
           <h3 style={{ marginTop: 18 }}>Fault injection</h3>

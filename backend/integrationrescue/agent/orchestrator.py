@@ -98,7 +98,7 @@ class IncidentService:
         inc = self.store.get(incident_id)
         if inc is None:
             raise KeyError(incident_id)
-        prov = provider or make_provider("claude" if inc["mode"] == "live" else "deterministic")
+        prov = provider or make_provider(inc["provider"])
         prov.load_state(inc["data"].get("provider_state") or {})
         r = _Run(self, incident_id, inc, prov, max_steps)
         r.loop()

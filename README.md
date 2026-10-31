@@ -15,7 +15,8 @@ state (correct plan, exactly one charge, exactly one grant).
 - Durable investigation state machine: intake → investigate (hypotheses + tools) → reproduce → patch → policy check →
   sandbox tests → fail-before/pass-after regression test → sandbox replay verification → human approval → promote → independent verification → report
 - Outcomes: `VERIFIED`, `PATCH_TESTED_NOT_VERIFIED`, `DIAGNOSED`, `INDETERMINATE`, `ESCALATED`, `FAILED`
-- Two decision makers behind one interface: **live Claude** (tool use) and a **deterministic rule-based baseline** (offline, clearly labelled, used in CI)
+- Three decision makers behind one interface: **live Gemini** (function calling), **live Claude** (tool use) and a
+  **deterministic rule-based baseline** (offline, clearly labelled, used in CI)
 - Security: typed tools, phase-gated permissions, path allow-lists, patch policy, redaction, local-origin allow-list, prompt-injection tests
 - Dashboard: incidents, submission with evidence upload and fault injection, live investigation, repair review & approval, verification, report, evaluation lab
 - Evaluation harness scored against hidden ground truth including held-out variants
@@ -30,8 +31,10 @@ Not yet: live-model evaluation (no API credentials on the dev machine), vision a
 ./scripts/dev.ps1 demo        # or run the first incident in the terminal
 ./scripts/dev.ps1 test
 ```
-Live model mode: set `ANTHROPIC_API_KEY` (or `ant auth login`) and choose "Live AI agent" in the UI, or
-`python -m integrationrescue.demo --provider claude`. Default model `claude-opus-5-5` (`IR_MODEL`), call budget `IR_MAX_LLM_CALLS`.
+Live model mode: put `GEMINI_API_KEY` (Google AI Studio) or `ANTHROPIC_API_KEY` in `.env` (git-ignored) and choose
+"Live AI agent" in the UI, or `python -m integrationrescue.demo --provider gemini|claude`. Defaults: `gemini-2.5-flash`
+(`IR_GEMINI_MODEL`; the free tier has per-model daily request limits), `claude-opus-5-5` (`IR_MODEL`); call budget
+`IR_MAX_LLM_CALLS` (30 per incident).
 
 ## Docs
 [Architecture](docs/ARCHITECTURE.md) · [Security model](docs/SECURITY_MODEL.md) · [Evaluation](docs/EVALUATION_PLAN.md) ·

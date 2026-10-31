@@ -15,7 +15,7 @@ Concept-stage: never claim customers, traction or benchmark wins that are not re
 - `backend/integrationrescue/simulators/` — SQLite "world" (billing, entitlements, webhooks, logs), sync service, HTTP API
 - `backend/integrationrescue/templates/entitlement_sync/` — fictional customer integration repo (the code under repair)
 - `backend/integrationrescue/scenarios/` — incident families; ground truth goes in `hidden`, never to the agent
-- `backend/integrationrescue/agent/` — orchestrator (state machine), tools, providers (Claude / deterministic baseline), sandbox, store, report
+- `backend/integrationrescue/agent/` — orchestrator (state machine), tools, providers (Gemini / Claude / deterministic baseline), sandbox, store, report
 - `backend/integrationrescue/verification/` — independent read-only verifier (only source of VERIFIED)
 - `backend/integrationrescue/security/policy.py` — path/patch/redaction policy
 - `frontend/` — Vite + React + TS dashboard; `frontend/e2e/` Playwright tests

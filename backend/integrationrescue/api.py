@@ -85,8 +85,9 @@ def _run_bg(iid: str) -> None:
 
 @app.get("/api/health")
 def health() -> dict[str, Any]:
-    live = bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"))
-    return {"status": "ok", "version": __version__, "live_model_configured": live,
+    live = {"claude": bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")),
+            "gemini": bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))}
+    return {"status": "ok", "version": __version__, "live_model_configured": any(live.values()), "live_providers": live,
             "default_provider": os.environ.get("IR_PROVIDER", "deterministic")}
 
 

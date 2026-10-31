@@ -14,3 +14,5 @@
   persistence; default `claude-opus-5-5`, effort `medium`, server-side fallbacks enabled.
 - **2026-10-31 — UI can only launch the deterministic eval** to prevent accidental model spend.
 - **2026-10-31 — Vite + React without a component library**; hash routing; CSS tokens with dark mode.
+- **2026-10-31 � Repository published as public** (founder's choice, overriding the private default) at
+  https://github.com/Ahmad-Joker/integrationrescue-ai. Commits rewritten to the GitHub noreply email before the first push. No licence file yet.

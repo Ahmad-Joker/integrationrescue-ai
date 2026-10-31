@@ -254,6 +254,11 @@ class _Run:
             return self._patch_failed(f"patch rejected by policy: {'; '.join(review.findings)}")
         self.ev("SECURITY_CHECK", f"Policy review passed (risk={review.risk})", review.__dict__)
 
+        if not sandbox.test_runner_available():
+            # Infrastructure fault, not a bad patch: stop without spending patch attempts or claiming a fix.
+            self.ev("ESCALATED", "Sandbox test runner (pytest) is not installed; the patch cannot be tested")
+            return self.goto("report", "DIAGNOSED")
+
         box = self.run_dir / "sandbox" / f"attempt_{n}"
         repo = sandbox.copy_repo(self.repo, box / "repo")
         try:

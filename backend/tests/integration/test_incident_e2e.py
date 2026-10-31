@@ -84,3 +84,14 @@ def test_report_written(svc):
     assert rep["verification"]["outcome"] == "PASS"
     from pathlib import Path
     assert "Independent verification" in (Path(inc["data"]["run_dir"]) / "report.md").read_text(encoding="utf-8")
+
+
+def test_missing_test_runner_escalates_instead_of_blaming_patch(svc, monkeypatch):
+    from integrationrescue.agent import sandbox
+    monkeypatch.setattr(sandbox, "test_runner_available", lambda: False)
+    iid = svc.create_from_scenario("payment_entitlement", "stale_price_id", seed=4, auto_approve=True)
+    inc = svc.run(iid)
+    assert inc["outcome"] == "DIAGNOSED"
+    assert "patch" not in inc["data"] or inc["data"]["patch"] is None
+    assert any("pytest" in e["summary"] for e in svc.store.timeline(iid) if e["kind"] == "ESCALATED")
+    assert verify(inc["data"]["world_path"], inc["data"]["contract"]).outcome == "FAIL"

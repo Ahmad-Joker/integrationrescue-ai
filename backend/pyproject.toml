@@ -10,10 +10,12 @@ dependencies = [
   "pydantic>=2.7",
   "anthropic>=2.0",
   "python-multipart>=0.0.9",
+  # Runtime, not dev: the sandbox runs the customer repo's tests to judge every patch.
+  "pytest>=8",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = ["ruff>=0.6"]
 
 [build-system]
 requires = ["setuptools>=68"]

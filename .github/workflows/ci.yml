@@ -20,6 +20,7 @@ jobs:
       - name: Install
         run: |
           python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
           .venv/bin/pip install -e "backend[dev]" pip-audit
       - name: Lint
         run: .venv/bin/ruff check backend
@@ -48,6 +49,7 @@ jobs:
       - name: Install
         run: |
           python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
           .venv/bin/pip install -e backend
           npm ci --prefix frontend
       - name: Lint

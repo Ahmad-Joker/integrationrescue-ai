@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import difflib
+import importlib.util
 import json
 import os
 import shutil
@@ -49,6 +50,11 @@ def apply_edits(repo: Path, edits: list[dict[str, Any]]) -> str:
         diffs.extend(difflib.unified_diff(before.splitlines(True), after.splitlines(True),
                                           f"a/{e['path']}", f"b/{e['path']}"))
     return "".join(diffs)
+
+
+def test_runner_available() -> bool:
+    """Without pytest no patch can be judged; callers must not mistake that for a failing patch."""
+    return importlib.util.find_spec("pytest") is not None
 
 
 def run_tests(repo: Path, test_paths: list[str] | None = None) -> dict[str, Any]:

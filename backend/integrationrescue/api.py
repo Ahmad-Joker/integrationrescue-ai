@@ -17,10 +17,13 @@ from .agent.orchestrator import IncidentService
 from .agent.providers import ProviderError, make_provider
 from .agent.store import Store
 from .evaluation import latest_results, run_suite
+from .paths import load_env_file
 from .scenarios import REGISTRY
 from .security.policy import redact
 from .simulators.api import build_router
 from .simulators.world import World
+
+load_env_file()
 
 MAX_UPLOAD_BYTES = 2_000_000
 ALLOWED_UPLOADS = {".log", ".txt", ".json", ".png", ".jpg", ".jpeg"}

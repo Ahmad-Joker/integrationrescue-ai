@@ -8,9 +8,11 @@ from __future__ import annotations
 import argparse
 
 from .agent.orchestrator import IncidentService
+from .paths import load_env_file
 
 
 def main() -> None:
+    load_env_file()
     ap = argparse.ArgumentParser()
     ap.add_argument("--provider", default="deterministic")
     ap.add_argument("--variant", default="stale_price_id")

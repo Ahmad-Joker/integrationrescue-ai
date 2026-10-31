@@ -12,7 +12,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from .agent.orchestrator import IncidentService
-from .paths import var_dir
+from .paths import load_env_file, var_dir
 from .scenarios import REGISTRY
 from .simulators.world import World
 from .verification import verify
@@ -112,6 +112,7 @@ def main() -> None:
     ap.add_argument("--no-heldout", action="store_true")
     ap.add_argument("--family", action="append")
     a = ap.parse_args()
+    load_env_file()
     res = run_suite(a.provider, a.seeds, not a.no_heldout, a.family)
     print(json.dumps(res["summary"], indent=2))
     for r in res["rows"]:

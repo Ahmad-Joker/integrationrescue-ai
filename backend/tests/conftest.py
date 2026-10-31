@@ -1,4 +1,8 @@
+import os
+
 import pytest
+
+os.environ["IR_SKIP_DOTENV"] = "1"  # never load the developer's real .env (and API key) into tests
 
 from integrationrescue.agent.orchestrator import IncidentService
 from integrationrescue.agent.store import Store

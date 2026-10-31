@@ -2,6 +2,7 @@ import type { Outcome } from './api'
 
 const OUTCOME_CLASS: Record<string, string> = {
   VERIFIED: 'b-ok',
+  NO_ACTION_NEEDED: 'b-ok',
   PATCH_TESTED_NOT_VERIFIED: 'b-info',
   DIAGNOSED: 'b-accent',
   INDETERMINATE: 'b-warn',

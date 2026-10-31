@@ -21,3 +21,11 @@ def test_ignores_other_event_types():
 def test_unknown_price_makes_no_change():
     assert resolve_plan("price_zzz", CFG) is None
     assert handle(_event("price_zzz"), CFG)["actions"] == []
+
+
+def test_events_signed_with_untrusted_key_are_ignored():
+    cfg = {**CFG, "accepted_signing_keys": ["whsec_k1"]}
+    trusted = {**_event("price_a"), "signing_key_id": "whsec_k1"}
+    assert handle(trusted, cfg)["status"] == "ok"
+    out = handle({**_event("price_a"), "signing_key_id": "whsec_other"}, cfg)
+    assert out["status"] == "untrusted_signature" and out["actions"] == []

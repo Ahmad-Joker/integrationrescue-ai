@@ -23,3 +23,8 @@
 - Fix: per-op Edit validation + policy guard; `test_edit_schema.py` (7 tests). Backend: 79 tests pass, ruff clean.
 - Run 2 (`eval_gemini_20261031_232820`): payment_entitlement 8/8 VERIFIED, 3 Google-side infra errors excluded,
   false VERIFIED 0, duplicate charges 0.
+
+## 2026-11-01 — families 4 and 5
+- Added signing_key_rotated and ack_timeout (+ `report_no_action_needed`, outcome NO_ACTION_NEEDED). Found and fixed:
+  regression fixtures dropped envelope fields (`signing_key_id`), so a correct key-rotation patch failed its own test.
+- Backend: 89 tests pass, ruff clean; frontend lint/build clean. Baseline eval 22 runs: 18/22 expected, 0 false claims.

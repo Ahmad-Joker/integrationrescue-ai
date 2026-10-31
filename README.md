@@ -21,7 +21,7 @@ state (correct plan, exactly one charge, exactly one grant).
 - Dashboard: incidents, submission with evidence upload and fault injection, live investigation, repair review & approval, verification, report, evaluation lab
 - Evaluation harness scored against hidden ground truth including held-out variants
 
-Not yet: live-model evaluation (no API credentials on the dev machine), vision analysis of screenshots, 5 of the 8 planned incident families, deployment. See [docs/NEXT_ACTIONS.md](docs/NEXT_ACTIONS.md).
+Not yet: vision analysis of screenshots, 3 of the 8 planned incident families (CRM field mapping needs a CRM simulator), deployment. See [docs/NEXT_ACTIONS.md](docs/NEXT_ACTIONS.md).
 
 ## Quick start (Windows PowerShell)
 ```powershell

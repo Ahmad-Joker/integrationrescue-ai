@@ -166,6 +166,11 @@ class Reason(Strict):
     reason: str = Field(max_length=2000)
 
 
+class NoActionNeeded(Strict):
+    reason: str = Field(max_length=2000, description="Why the business outcome is already correct")
+    evidence: list[str] = Field(min_length=1, max_length=20)
+
+
 # ------------------------------------------------------------------ implementations
 def _list_files(ctx: ToolContext, _: NoArgs) -> Any:
     out = []
@@ -294,11 +299,16 @@ TOOLS: dict[str, Tool] = {t.name: t for t in [
     Tool("declare_indeterminate", "Declare that authoritative evidence is insufficient to conclude.",
          Reason, None, "terminal"),
     Tool("escalate", "Escalate to a human with a reason.", Reason, None, "terminal"),
+    Tool("report_no_action_needed",
+         "Close the incident without a patch because the business outcome is already correct (e.g. an alert from "
+         "a retried or timed-out delivery that was in fact applied once). The independent verifier must agree; if "
+         "it does not, the incident goes back to investigation.", NoActionNeeded, None, "terminal"),
 ]}
 
 READ_TOOLS = [n for n, t in TOOLS.items() if t.kind == "read"]
 PHASE_TOOLS = {
-    "investigate": READ_TOOLS + ["record_hypotheses", "submit_diagnosis", "declare_indeterminate", "escalate"],
+    "investigate": READ_TOOLS + ["record_hypotheses", "submit_diagnosis", "declare_indeterminate",
+                                 "report_no_action_needed", "escalate"],
     "patch": READ_TOOLS + ["record_hypotheses", "propose_patch", "escalate"],
 }
 

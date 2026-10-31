@@ -104,8 +104,9 @@ def test_{slug}_paid_event_grants_{plan}():
 
 def write_regression_test(repo: Path, incident_id: str, event: dict[str, Any], expected_plan: str) -> list[str]:
     slug = "incident_" + "".join(ch for ch in incident_id.lower() if ch.isalnum())[:12]
-    fixture = {"id": event["id"], "type": event["type"],
-               "data": {k: event["data"][k] for k in ("customer_id", "tenant", "lines")}}
+    # Minimal on purpose (no e-mail or other personal data), but keep every envelope field the handler may read.
+    envelope = {k: event[k] for k in ("id", "type", "api_version", "signing_key_id") if k in event}
+    fixture = {**envelope, "data": {k: event["data"][k] for k in ("customer_id", "tenant", "lines")}}
     fixture_name = f"fixture_{slug}.json"
     tests = repo / "tests"
     tests.mkdir(exist_ok=True)

@@ -2,9 +2,9 @@
 
 | # | Task | Importance | Files | Depends on | Done when | Status |
 |---|---|---|---|---|---|---|
-| 1 | Run live Claude provider on all families; fix adapter issues; record eval | P0 | agent/providers.py, evaluation.py | API key (BLOCKERS #1) | `--provider claude` eval saved; schema_drift repaired & VERIFIED or failure analysed | blocked |
+| 1 | Live eval: Gemini recorded (see EVALUATION_PLAN); rerun on the 2 new families and more schema_drift runs; Claude when a key exists | P0 | evaluation.py | free-tier quota / founder billing decision | live rows for all 5 families; code repair rate measured | partial |
 | 2 | Create GitHub repo `integrationrescue-ai`, push, confirm CI green | P1 | .github/workflows/ci.yml | founder approval | CI run inspected and passing | done (public; run 41154637560 green) |
-| 3 | Add families 4–7: timeout-after-commit (lost_ack), duplicate side effect in handler, credential expiry, CRM tenant field mapping (needs CRM simulator) | P1 | scenarios/, simulators/ | — | each has setup, defect, held-out variant, tests, eval rows | todo |
+| 3 | Incident families: done signing_key_rotated (credential expiry) and ack_timeout (timeout-after-commit, NO_ACTION_NEEDED); still todo CRM tenant field mapping (needs CRM simulator) and duplicate side effect | P1 | scenarios/, simulators/ | — | each has setup, defect, held-out variant, tests, eval rows | partial (5 of 8) |
 | 4 | General coding-agent baseline comparison harness | P1 | evaluation.py | #1 | same verifier scores both; report failures | todo |
 | 5 | Screenshot analysis via vision model → structured observations cross-checked with API state | P3 | agent/, api.py | #1 | text-only vs multimodal comparison recorded | todo |
 | 6 | Playwright "customer app" page + browser tool restricted to local origin | P3 | simulators/, agent/tools.py | — | agent can reproduce "Upgrade to Pro" banner and verify after fix | todo |

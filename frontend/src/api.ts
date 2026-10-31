@@ -1,5 +1,6 @@
 export type Outcome =
   | 'VERIFIED'
+  | 'NO_ACTION_NEEDED'
   | 'PATCH_TESTED_NOT_VERIFIED'
   | 'DIAGNOSED'
   | 'INDETERMINATE'

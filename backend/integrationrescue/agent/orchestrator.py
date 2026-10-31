@@ -27,7 +27,8 @@ from .providers import AgentView, Provider, ProviderError, make_provider
 from .store import Store
 from .tools import SimClient, ToolContext, execute
 
-OUTCOMES = ("VERIFIED", "PATCH_TESTED_NOT_VERIFIED", "DIAGNOSED", "INDETERMINATE", "ESCALATED", "FAILED")
+OUTCOMES = ("VERIFIED", "NO_ACTION_NEEDED", "PATCH_TESTED_NOT_VERIFIED", "DIAGNOSED", "INDETERMINATE", "ESCALATED",
+            "FAILED")
 MAX_TOOL_CALLS = 40
 MAX_PATCH_ATTEMPTS = 3
 MAX_REPRO_RETRIES = 1
@@ -206,6 +207,27 @@ class _Run:
             self.goto("report", "DIAGNOSED" if self.data["diagnosis"] else "ESCALATED")
         elif tool == "propose_patch":
             self.handle_patch(args)
+        elif tool == "report_no_action_needed":
+            self.handle_no_action(args)
+
+    def handle_no_action(self, args: dict[str, Any]) -> None:
+        # The agent's claim is only accepted if the independent verifier sees the contract already met.
+        result = verify(self.world.db_path, self.data["contract"])
+        self.ev("VERIFY_BUSINESS_OUTCOME", f"Agent reports no action needed; independent verification: "
+                                           f"{result.outcome}", result.to_dict())
+        self.data["verification"] = result.to_dict()
+        if result.outcome == "PASS":
+            self.goto("report", "NO_ACTION_NEEDED")
+        elif result.outcome == "INDETERMINATE":
+            self.goto("report", "INDETERMINATE")
+        elif self.data.get("no_action_rejected"):
+            self.ev("ESCALATED", "No-action claim contradicted by the verifier twice")
+            self.goto("report", "ESCALATED")
+        else:
+            self.data["no_action_rejected"] = True
+            failed = [a["name"] for a in result.to_dict()["assertions"] if not a["passed"]]
+            self.data["feedback"].append(f"report_no_action_needed rejected: independent verification FAILED "
+                                         f"({', '.join(failed)}); the business outcome is not correct yet")
 
     # ------------------------------------------------------- reproduction
     def reproduce(self) -> None:

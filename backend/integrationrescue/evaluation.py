@@ -27,8 +27,8 @@ def _score(svc: IncidentService, iid: str, duration: float) -> dict[str, Any]:
     diag = d.get("diagnosis") or {}
     expected_outcome = hidden.get("expected_outcome")
     expected_file = hidden.get("config_file")
-    if expected_outcome == "INDETERMINATE":
-        diagnosed_ok = inc["outcome"] == "INDETERMINATE"
+    if expected_outcome in ("INDETERMINATE", "NO_ACTION_NEEDED"):
+        diagnosed_ok = inc["outcome"] == expected_outcome
     else:
         diagnosed_ok = bool(diag) and expected_file in (diag.get("affected_files") or [])
     recheck = verify(d["world_path"], d["contract"]).outcome
@@ -46,7 +46,10 @@ def _score(svc: IncidentService, iid: str, duration: float) -> dict[str, Any]:
         "reproduced": (d.get("reproduction") or {}).get("verification", {}).get("outcome") == "FAIL",
         "patch_accepted": bool(d.get("patch")),
         "verified": inc["outcome"] == "VERIFIED",
-        "false_verified": inc["outcome"] == "VERIFIED" and (recheck != "PASS" or expected_outcome == "INDETERMINATE"),
+        # A success claim (VERIFIED or NO_ACTION_NEEDED) the environment does not back up.
+        "false_verified": inc["outcome"] in ("VERIFIED", "NO_ACTION_NEEDED")
+        and (recheck != "PASS" or expected_outcome == "INDETERMINATE"),
+        "unnecessary_patch": expected_outcome == "NO_ACTION_NEEDED" and bool(d.get("patch")),
         "duplicate_charge": charges > 1,
         "tool_calls": len(d.get("trace", [])),
         "denied_tool_calls": sum(1 for s in d.get("trace", []) if not s["ok"]),
@@ -90,6 +93,7 @@ def run_suite(provider: str = "deterministic", seeds: list[int] | None = None, h
         "outcome_matches_expected_rate": round(sum(r["outcome"] == r["expected_outcome"] for r in rows) / n, 3),
         "false_verified": sum(r["false_verified"] for r in rows),
         "duplicate_charges": sum(r["duplicate_charge"] for r in rows),
+        "unnecessary_patches": sum(r["unnecessary_patch"] for r in rows),
         "mean_tool_calls": round(sum(r["tool_calls"] for r in rows) / n, 1),
         "mean_duration_s": round(sum(r["duration_s"] for r in rows) / n, 2),
         "by_family": {},

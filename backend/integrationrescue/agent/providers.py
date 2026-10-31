@@ -122,7 +122,11 @@ class HeuristicProvider(Provider):
                           {"reason": "Authoritative billing/entitlement state could not be read; cannot "
                                      "determine expected outcome."})
         if not c["diverged"]:
-            return Action("escalate", {"reason": "Billing and entitlement state agree; no divergence found."})
+            # Alerts without a business failure (e.g. a retried delivery): confirm, change nothing.
+            return Action("report_no_action_needed", {
+                "reason": "Billing and entitlement agree: the paid plan is active. Alerts reflect delivery retries, "
+                          "not a failed outcome; no change is needed.",
+                "evidence": [f"compare: expected={c['expected_plan_from_billing']} observed={c['observed_plan']}"]})
 
         evs = _last(t, "billing_list_events")
         if not evs:
@@ -195,6 +199,29 @@ class HeuristicProvider(Provider):
                 "replay_event_id": eid,
                 "confidence": 0.9,
             }, "First divergence localised to tenant mapping.")
+        if handler_status == "untrusted_signature":
+            key_id = event.get("signing_key_id", "")
+            cfg_path = f"tenants/{tenant}.json"
+            # Only a key id that billing itself announced may be trusted.
+            logs = _last(t, "logs_search", q=key_id)
+            if not logs:
+                return Action("logs_search", {"q": key_id, "service": "billing"},
+                              "Did billing announce this signing key?")
+            announced = isinstance(logs["output"], list) and any(
+                "signing key rotated" in e.get("message", "") for e in logs["output"])
+            if not announced:
+                return Action("escalate", {"reason": f"Event signed with unknown key {key_id!r} that billing never "
+                                                     "announced; possible spoofing, needs human review."})
+            if not _last(t, "repo_read_file", path=cfg_path):
+                return Action("repo_read_file", {"path": cfg_path}, "Inspect the tenant's trusted keys.")
+            return Action("submit_diagnosis", {
+                "root_cause": (f"Billing rotated tenant '{tenant}' webhook signing key to {key_id}; {cfg_path} "
+                               f"accepted_signing_keys still lists only the old key, so the handler ignores "
+                               f"{eid} and the sync service still answers 202."),
+                "category": "credentials",
+                "evidence": [f"dry_run status={handler_status}", f"billing log announces rotation to {key_id}"],
+                "affected_files": [cfg_path], "replay_event_id": eid, "confidence": 0.85,
+            }, "First divergence localised to the tenant's trusted signing keys.")
         if handler_status == "error":
             return Action("submit_diagnosis", {
                 "root_cause": f"Sync handler raised while processing {eid}: {dry_out.get('error')}",
@@ -208,6 +235,16 @@ class HeuristicProvider(Provider):
         if v.feedback and any("rejected" in f or "failed" in f for f in v.feedback):
             return Action("escalate", {"reason": "Proposed patch failed review/testing: " + v.feedback[-1][:300]})
         d = v.diagnosis or {}
+        if d.get("category") == "credentials":
+            cfg = _last(v.trace, "repo_read_file", path=d["affected_files"][0])
+            evs = _last(v.trace, "billing_list_events")
+            event = [e for e in evs["output"] if e["id"] == d["replay_event_id"]][0]
+            keys = list(cfg["output"].get("accepted_signing_keys", [])) + [event["signing_key_id"]]
+            return Action("propose_patch", {
+                "edits": [{"op": "json_set", "path": d["affected_files"][0], "key_path": ["accepted_signing_keys"],
+                           "value": keys}],
+                "rationale": "Trust the rotated key billing announced, keeping the old key during the overlap.",
+            })
         if d.get("category") != "config_mapping":
             return Action("escalate", {"reason": "Baseline only repairs configuration mapping defects."})
         evs = _last(v.trace, "billing_list_events")
@@ -239,6 +276,9 @@ Rules:
   first point where observed state diverges, and test hypotheses with diagnostic tools.
 - Keep a hypothesis list with record_hypotheses and update statuses as evidence arrives.
 - If authoritative state cannot be read or evidence is insufficient, call declare_indeterminate.
+- If the business outcome is already correct (alerts without a real failure), call report_no_action_needed
+  instead of changing anything; an independent verifier checks that claim.
+- Only trust credentials or key ids that the authoritative system (billing) itself announced.
 - In the investigate phase finish with submit_diagnosis. In the patch phase finish with
   propose_patch: minimal edits, scoped to the affected tenant where possible, never tests.
 - You cannot mark anything verified; an independent verifier does that.

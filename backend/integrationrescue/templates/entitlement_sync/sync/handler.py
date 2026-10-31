@@ -24,6 +24,17 @@ def resolve_plan(price_id: str, tenant_cfg: dict) -> str | None:
 def handle(event: dict, tenant_cfg: dict) -> dict:
     if event.get("type") != "invoice.paid":
         return {"status": "ignored", "actions": [], "log": []}
+    accepted = tenant_cfg.get("accepted_signing_keys")
+    if accepted is not None and event.get("signing_key_id") not in accepted:
+        return {
+            "status": "untrusted_signature",
+            "actions": [],
+            "log": [{
+                "level": "warning",
+                "message": f"event signed with key {event.get('signing_key_id')!r}, not in accepted_signing_keys; "
+                           "ignored",
+            }],
+        }
     data = event["data"]
     line = data["lines"][0]
     plan = resolve_plan(line["price_id"], tenant_cfg)

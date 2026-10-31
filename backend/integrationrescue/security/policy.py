@@ -68,6 +68,9 @@ class PatchReview:
     changed_lines: int = 0
 
 
+KEY_ID_RX = re.compile(r"whsec_[A-Za-z0-9_]{1,40}")
+
+
 def review_patch(repo: Path, edits: list[dict[str, Any]]) -> PatchReview:
     """Static review of a proposed patch before it touches any sandbox."""
     findings: list[str] = []
@@ -92,6 +95,14 @@ def review_patch(repo: Path, edits: list[dict[str, Any]]) -> PatchReview:
                 return PatchReview(False, "high", ["json_set requires a non-empty key_path"])
             if e["key_path"][0] == "price_plan_map" and e.get("value") not in ALLOWED_PLANS:
                 return PatchReview(False, "high", [f"unknown plan value {e.get('value')!r}"])
+            if e["key_path"][0] == "accepted_signing_keys":
+                keys = e.get("value")
+                if not (isinstance(keys, list) and keys and all(isinstance(k, str) and KEY_ID_RX.fullmatch(k)
+                                                                for k in keys)):
+                    return PatchReview(False, "high", ["accepted_signing_keys must be a list of key ids (whsec_...)"])
+                risk = "medium"  # changes which senders are trusted: the approver should confirm the key id
+                findings.append(f"changes trusted webhook signing keys in {path}: confirm {keys} with the billing "
+                                "provider before approving")
             changed += 1
         elif op == "replace":
             new = str(e.get("new", ""))

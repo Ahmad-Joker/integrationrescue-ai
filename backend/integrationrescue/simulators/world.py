@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS processed_events (
   event_id TEXT PRIMARY KEY, result TEXT, processed_at TEXT);
 """
 
+DEFAULT_SIGNING_KEY = "whsec_k1"
+
 PLAN_FEATURES = {
     "free": ["dashboard"],
     "pro": ["dashboard", "advanced_reports", "api_access", "priority_support"],
@@ -208,6 +210,9 @@ class World:
                 # Tenants can be pinned to a newer webhook API version with a different line shape.
                 row = c.execute("SELECT value FROM meta WHERE key=?", (f"api_version:{cust['tenant']}",)).fetchone()
                 api_version = row["value"] if row else "2026-06-01"
+                # Key id only (never secret material): which signing key billing used for this endpoint.
+                row = c.execute("SELECT value FROM meta WHERE key=?", (f"signing_key:{cust['tenant']}",)).fetchone()
+                signing_key_id = row["value"] if row else DEFAULT_SIGNING_KEY
                 if api_version >= "2026-09-01":
                     line = {"price": {"id": price_id, "interval": price["interval"]},
                             "amount": price["amount"], "currency": price["currency"]}
@@ -216,6 +221,7 @@ class World:
                             "currency": price["currency"], "interval": price["interval"]}
                 payload = {
                     "id": ev_id, "type": "invoice.paid", "created": ts, "api_version": api_version,
+                    "signing_key_id": signing_key_id,
                     "data": {
                         "invoice_id": inv_id, "customer_id": customer_id,
                         "customer_email": cust["email"], "tenant": cust["tenant"],

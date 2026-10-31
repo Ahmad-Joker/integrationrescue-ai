@@ -19,6 +19,19 @@ denied tool calls · patch attempts · duration · model usage/cost.
 Totals: 14 runs, false VERIFIED 0, duplicate charges 0, mean 11.7 tool calls, ~4.3 s per incident.
 This measures the **baseline**, not the LLM agent.
 
+## Baseline, 5 families (seeds 101 & 202, 2026-11-01)
+File `var/eval/eval_deterministic_20261101_001734.json`, 22 runs.
+| Family | Runs | Expected outcome reached |
+|---|---|---|
+| payment_entitlement | 8 | 8 VERIFIED |
+| signing_key_rotated (new; incl. held-out) | 4 | 4 VERIFIED (patch flagged medium risk: trust change) |
+| ack_timeout (new; incl. held-out) | 4 | 4 NO_ACTION_NEEDED, 0 unnecessary patches |
+| state_unavailable | 2 | 2 INDETERMINATE |
+| schema_drift | 4 | 0 (DIAGNOSED; baseline does not attempt code fixes) |
+
+Totals: correct diagnosis 22/22, expected outcome 18/22, false success claims 0, duplicate charges 0, ~4.8 s per incident.
+`false_verified` now also counts a NO_ACTION_NEEDED claim the environment does not support.
+
 ## Live run 1 — Gemini `gemini-3.1-flash-lite` (free tier), seeds 101 & 202, 2026-10-31
 File `var/eval/eval_gemini_20261031_230613.json`. Same 14 incidents, same verifier, auto-approval (evaluation mode).
 | Family | Runs | VERIFIED | Correct diagnosis | Other outcomes |

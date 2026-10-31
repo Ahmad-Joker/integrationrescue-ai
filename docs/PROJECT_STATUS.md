@@ -11,7 +11,8 @@
 
 ## Implemented
 Simulators (billing, entitlements, webhooks, logs) · sync service running customer code in child processes · scenario
-families: payment_entitlement (4 variants), schema_drift (2), state_unavailable (1) · orchestrator with persistence,
+families: payment_entitlement (4 variants), schema_drift (2), state_unavailable (1), signing_key_rotated (2),
+ack_timeout (2; correct outcome NO_ACTION_NEEDED) · orchestrator with persistence,
 resume, approval gate · 18 diagnostic tools + 5 control/terminal tools · Claude provider + deterministic baseline ·
 sandbox + regression generation · independent verifier · reports · product API · dashboard (7 screens) · eval harness ·
 CI workflow file.
@@ -20,7 +21,8 @@ CI workflow file.
 - Live mode runs on Gemini free tier (`gemini-3.1-flash-lite`): config repairs 8/8 VERIFIED in live run 2; code repair
   not established (see EVALUATION_PLAN). Claude adapter still only tested with a fake client (no Anthropic key).
 - Baseline cannot repair code defects (schema_drift ends DIAGNOSED) — by design, but it means no recorded code repair by an agent yet.
-- Screenshots are stored but not analysed; no CRM simulator; 5 incident families missing.
+- Screenshots are stored but not analysed; no CRM simulator; 3 of 8 planned incident families missing
+  (CRM field mapping, duplicate side effect, one more).
 - Child processes not OS-sandboxed; local API unauthenticated.
 
 ## CI

@@ -8,6 +8,7 @@ and the independent verification that alone can produce a VERIFIED outcome.
 
 from __future__ import annotations
 
+import json
 import random
 import uuid
 from pathlib import Path
@@ -210,6 +211,22 @@ class _Run:
         elif tool == "report_no_action_needed":
             self.handle_no_action(args)
 
+    def _unannounced_keys(self, edits: list[dict[str, Any]]) -> list[str]:
+        """Key ids a patch would newly trust that billing's own logs never announced for that tenant."""
+        out: list[str] = []
+        for e in edits:
+            if e.get("op") != "json_set" or (e.get("key_path") or [None])[0] != "accepted_signing_keys":
+                continue
+            cfg_path = self.repo / e["path"]
+            current = set(json.loads(cfg_path.read_text(encoding="utf-8")).get("accepted_signing_keys", [])
+                          if cfg_path.is_file() else [])
+            tenant = Path(e["path"]).stem
+            announced = {json.loads(r["context"]).get("new_key_id") for r in self.world.query(
+                "SELECT context FROM logs WHERE service='billing' AND message='webhook signing key rotated'")
+                if json.loads(r["context"]).get("tenant") == tenant}
+            out += [k for k in e.get("value") or [] if k not in current and k not in announced]
+        return out
+
     def handle_no_action(self, args: dict[str, Any]) -> None:
         # The agent's claim is only accepted if the independent verifier sees the contract already met.
         result = verify(self.world.db_path, self.data["contract"])
@@ -274,6 +291,14 @@ class _Run:
         if not review.allowed:
             self.ev("SECURITY_CHECK", f"Patch rejected by policy: {'; '.join(review.findings)}", review.__dict__)
             return self._patch_failed(f"patch rejected by policy: {'; '.join(review.findings)}")
+        unannounced = self._unannounced_keys(edits)
+        if unannounced:
+            # Trust comes from the authoritative system, never from the event or the agent: a forged event could
+            # carry any key id.
+            msg = (f"refusing to trust signing key(s) {unannounced}: billing never announced them "
+                   "(no 'webhook signing key rotated' log for this tenant)")
+            self.ev("SECURITY_CHECK", f"Patch rejected: {msg}")
+            return self._patch_failed(f"patch rejected by policy: {msg}")
         self.ev("SECURITY_CHECK", f"Policy review passed (risk={review.risk})", review.__dict__)
 
         if not sandbox.test_runner_available():

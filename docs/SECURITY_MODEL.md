@@ -22,8 +22,9 @@
   verifier asserts exactly one charge and one grant.
 - **Verification independence**: read-only SQLite connection; expected state from the ledger; agent output never consulted.
 - **Trust changes**: edits to a tenant's `accepted_signing_keys` must be a list of key ids (`whsec_…`) and are marked
-  medium risk with an explicit "confirm with the billing provider" note for the approver; the baseline only trusts a
-  key id that billing's own logs announced (an unannounced key escalates as possible spoofing).
+  medium risk with an explicit "confirm with the billing provider" note for the approver. The orchestrator rejects any
+  newly trusted key id that billing's own logs never announced for that tenant (forged events can carry any key id).
+  This is enforced in code because live Gemini, despite the prompt, trusted the event's key without checking.
 - **No-action claims**: `report_no_action_needed` is accepted only if the independent verifier passes on the live
   environment; a contradicted claim returns to investigation once, then escalates.
 - **Budgets**: 40 tool calls per incident, 3 patch attempts, model call cap (`IR_MAX_LLM_CALLS`).

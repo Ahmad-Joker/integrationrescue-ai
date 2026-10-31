@@ -68,3 +68,20 @@ def test_false_no_action_claim_is_rejected_by_verifier(svc):
     assert inc["outcome"] == "ESCALATED"
     assert any("report_no_action_needed rejected" in f for f in inc["data"]["feedback"])
     assert verify(inc["data"]["world_path"], inc["data"]["contract"]).outcome == "FAIL"
+
+
+def test_orchestrator_refuses_unannounced_key_even_if_agent_proposes_it(svc):
+    """Enforced in deterministic code: a model that skips the check (as live Gemini did) still cannot add trust."""
+    class TrustsEventKey(HeuristicProvider):
+        def next_actions(self, view):
+            if view.phase == "patch":
+                path = view.diagnosis["affected_files"][0]
+                return [Action("propose_patch", {"rationale": "trust the forged key", "edits": [{
+                    "op": "json_set", "path": path, "key_path": ["accepted_signing_keys"],
+                    "value": ["whsec_k1", "whsec_attacker_1"]}]})]
+            return super().next_actions(view)
+
+    iid = svc.create_from_scenario("signing_key_rotated", "rotated_monthly", seed=55, auto_approve=True)
+    inc = svc.run(iid, provider=TrustsEventKey())
+    assert inc["outcome"] != "VERIFIED"
+    assert any("billing never announced" in f and "whsec_attacker_1" in f for f in inc["data"]["feedback"])

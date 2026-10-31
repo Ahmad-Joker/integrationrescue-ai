@@ -65,6 +65,18 @@ Totals over 11 scored runs: correct diagnosis 11/11, expected outcome 10/11, fal
 mean 14.2 tool calls, ~63 s per incident. Code repair by the live model is **not yet established**: one VERIFIED in a
 standalone run, zero in the evals, and only 1 scored schema_drift run here. Needs more runs (ideally a stronger model).
 
+## Live run 3 — new families, `gemini-3.1-flash-lite`, seeds 101 & 202, 2026-11-01
+File `var/eval/eval_gemini_20261101_002233.json`. 8 runs; 2 hit Google 429 rate limits (infra errors, not scored).
+| Family | Scored runs | Expected outcome reached |
+|---|---|---|
+| signing_key_rotated (incl. held-out) | 3 | 3 VERIFIED, each on the first patch attempt |
+| ack_timeout (incl. held-out) | 3 | 3 NO_ACTION_NEEDED, 0 unnecessary patches |
+
+**Security finding:** in all 3 key-rotation repairs the model took the new key id from the event itself and never
+checked that billing announced the rotation, although the system prompt says to. The key happened to be genuine, but
+the same behaviour would trust a forged event's key. Now enforced in the orchestrator (patch rejected unless billing
+logged the rotation for that tenant), with a test that a model proposing an unannounced key cannot reach VERIFIED.
+
 Earlier attempts on `gemini-3.5-flash` and `gemini-2.5-flash` hit the free tier's ~20 requests/day/model limit and
 are excluded (moved to `var/eval/invalid/`); the eval now reports such quota failures as infrastructure errors.
 

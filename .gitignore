@@ -1,0 +1,31 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Runtime state (simulated worlds, incident DB, sandboxes)
+var/
+
+# Node
+node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

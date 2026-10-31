@@ -73,6 +73,11 @@ def _last(trace: list[dict[str, Any]], tool: str, **match: Any) -> dict[str, Any
     return None
 
 
+def _line_price(event: dict[str, Any]) -> str:
+    line = event["data"]["lines"][0]
+    return line.get("price_id") or (line.get("price") or {}).get("id", "")
+
+
 class HeuristicProvider(Provider):
     """Rule-based troubleshooting baseline: follows the evidence chain billing -> webhook -> sync -> entitlement."""
 
@@ -126,7 +131,7 @@ class HeuristicProvider(Provider):
             return Action("escalate", {"reason": "No invoice.paid event was emitted (billing-side defect)."})
         event = paid[-1]
         eid = event["id"]
-        price_id = event["data"]["lines"][0]["price_id"]
+        price_id = _line_price(event)
         tenant = event["data"].get("tenant", "")
 
         if not _last(t, "webhooks_list_deliveries"):
@@ -203,7 +208,7 @@ class HeuristicProvider(Provider):
             return Action("escalate", {"reason": "Baseline only repairs configuration mapping defects."})
         evs = _last(v.trace, "billing_list_events")
         event = [e for e in evs["output"] if e["id"] == d["replay_event_id"]][0]
-        price_id = event["data"]["lines"][0]["price_id"]
+        price_id = _line_price(event)
         price = _last(v.trace, "billing_get_price", price_id=price_id)
         if not price:
             return Action("billing_get_price", {"price_id": price_id}, "Authoritative plan family for the price.")

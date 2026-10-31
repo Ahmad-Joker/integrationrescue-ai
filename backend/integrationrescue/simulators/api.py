@@ -21,6 +21,12 @@ def build_router(resolve: WorldResolver) -> APIRouter:
         except KeyError:
             raise HTTPException(404, f"unknown environment {wid}") from None
 
+    def billing(wid: str) -> World:
+        w = world(wid)
+        if w.fault("billing_ledger_unavailable"):
+            raise HTTPException(503, "billing ledger temporarily unavailable")
+        return w
+
     # ---------------- billing
     @r.get("/worlds/{wid}/billing/customers")
     def find_customers(wid: str, email: str | None = None, customer_id: str | None = None):
@@ -33,11 +39,11 @@ def build_router(resolve: WorldResolver) -> APIRouter:
 
     @r.get("/worlds/{wid}/billing/customers/{cid}/invoices")
     def invoices(wid: str, cid: str):
-        return world(wid).query("SELECT * FROM invoices WHERE customer_id=? ORDER BY created_at", (cid,))
+        return billing(wid).query("SELECT * FROM invoices WHERE customer_id=? ORDER BY created_at", (cid,))
 
     @r.get("/worlds/{wid}/billing/invoices/{iid}/charges")
     def charges(wid: str, iid: str):
-        rows = world(wid).query("SELECT * FROM charges WHERE invoice_id=?", (iid,))
+        rows = billing(wid).query("SELECT * FROM charges WHERE invoice_id=?", (iid,))
         for row in rows:
             row.pop("idempotency_key", None)
         return rows
@@ -58,7 +64,7 @@ def build_router(resolve: WorldResolver) -> APIRouter:
 
     @r.get("/worlds/{wid}/billing/events")
     def events(wid: str, customer_id: str | None = None):
-        rows = world(wid).query("SELECT payload FROM events ORDER BY created_at")
+        rows = billing(wid).query("SELECT payload FROM events ORDER BY created_at")
         out = [json.loads(x["payload"]) for x in rows]
         if customer_id:
             out = [e for e in out if e.get("data", {}).get("customer_id") == customer_id]
@@ -66,7 +72,7 @@ def build_router(resolve: WorldResolver) -> APIRouter:
 
     @r.get("/worlds/{wid}/billing/events/{eid}")
     def event(wid: str, eid: str):
-        ev = world(wid).get_event(eid)
+        ev = billing(wid).get_event(eid)
         if ev is None:
             raise HTTPException(404, "event not found")
         return ev

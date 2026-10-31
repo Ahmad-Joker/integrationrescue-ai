@@ -205,13 +205,21 @@ class World:
                 c.execute("INSERT INTO charges VALUES(?,?,?,?,?,?)",
                           (ch_id, inv_id, price["amount"], "succeeded", idempotency_key, ts))
                 ev_id = self._next_id(c, "evt")
+                # Tenants can be pinned to a newer webhook API version with a different line shape.
+                row = c.execute("SELECT value FROM meta WHERE key=?", (f"api_version:{cust['tenant']}",)).fetchone()
+                api_version = row["value"] if row else "2026-06-01"
+                if api_version >= "2026-09-01":
+                    line = {"price": {"id": price_id, "interval": price["interval"]},
+                            "amount": price["amount"], "currency": price["currency"]}
+                else:
+                    line = {"price_id": price_id, "amount": price["amount"],
+                            "currency": price["currency"], "interval": price["interval"]}
                 payload = {
-                    "id": ev_id, "type": "invoice.paid", "created": ts, "api_version": "2026-06-01",
+                    "id": ev_id, "type": "invoice.paid", "created": ts, "api_version": api_version,
                     "data": {
                         "invoice_id": inv_id, "customer_id": customer_id,
                         "customer_email": cust["email"], "tenant": cust["tenant"],
-                        "lines": [{"price_id": price_id, "amount": price["amount"],
-                                   "currency": price["currency"], "interval": price["interval"]}],
+                        "lines": [line],
                     },
                 }
                 c.execute("INSERT INTO events VALUES(?,?,?,?)", (ev_id, "invoice.paid", json.dumps(payload), ts))

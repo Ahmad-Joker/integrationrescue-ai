@@ -3,7 +3,7 @@
 | # | Task | Importance | Files | Depends on | Done when | Status |
 |---|---|---|---|---|---|---|
 | 1 | Run live Claude provider on all families; fix adapter issues; record eval | P0 | agent/providers.py, evaluation.py | API key (BLOCKERS #1) | `--provider claude` eval saved; schema_drift repaired & VERIFIED or failure analysed | blocked |
-| 2 | Create private GitHub repo `integrationrescue-ai`, push, confirm CI green | P1 | .github/workflows/ci.yml | founder approval | CI run inspected and passing | blocked |
+| 2 | Create GitHub repo `integrationrescue-ai`, push, confirm CI green | P1 | .github/workflows/ci.yml | founder approval | CI run inspected and passing | done (public; run 41154637560 green) |
 | 3 | Add families 4–7: timeout-after-commit (lost_ack), duplicate side effect in handler, credential expiry, CRM tenant field mapping (needs CRM simulator) | P1 | scenarios/, simulators/ | — | each has setup, defect, held-out variant, tests, eval rows | todo |
 | 4 | General coding-agent baseline comparison harness | P1 | evaluation.py | #1 | same verifier scores both; report failures | todo |
 | 5 | Screenshot analysis via vision model → structured observations cross-checked with API state | P3 | agent/, api.py | #1 | text-only vs multimodal comparison recorded | todo |

@@ -3,7 +3,7 @@
 **Phase:** P0 core complete; P1/P2 partially complete. First non-negotiable milestone **met in deterministic mode**.
 
 ## Verified (tests executed 2026-10-31)
-- Backend: 61 pytest tests pass (unit, integration, adversarial, API, Claude-adapter protocol), ruff clean.
+- Backend: 62 pytest tests pass (unit, integration, adversarial, API, Claude-adapter protocol), ruff clean.
 - Frontend: oxlint clean, `tsc -b && vite build` succeeds, 2 Playwright tests pass (full approve→VERIFIED journey with
   duplicate-webhook fault; ledger outage → INDETERMINATE).
 - Manual browser walkthrough of the same journey: no console errors.

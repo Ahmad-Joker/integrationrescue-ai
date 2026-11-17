@@ -1,29 +1,26 @@
-# Release readiness (Definition of Done, competition prototype)
+# Release readiness (Definition of Done, competition prototype, updated 2026-11-18)
 
 | # | Criterion | Status |
 |---|---|---|
-| 1 | Starts with documented commands | ✅ |
-| 2 | Backend services run | ✅ |
-| 3 | Frontend runs | ✅ |
-| 4 | Simulator APIs work | ✅ |
-| 5 | Incident fixtures execute | ✅ (3 families) |
-| 6 | Genuine tool-driven decisions with a real model | ✅ Gemini (free tier); repair rate low, see EVALUATION_PLAN |
-| 7 | Failure reproduction | ✅ |
-| 8 | Bounded repair proposal | ✅ |
-| 9 | Isolated repair testing | ✅ |
-| 10 | Independent verification | ✅ |
-| 11 | Duplicate financial effects prevented | ✅ (tested) |
+| 1 | Starts with documented commands | ✅ `dev.ps1`, `serve_demo.py`, Dockerfile |
+| 2–4 | Backend, frontend, simulator APIs run | ✅ |
+| 5 | Incident fixtures execute | ✅ 5 families |
+| 6 | Genuine tool-driven decisions with a real model | ✅ Gemini (free tier); code repair unreliable |
+| 7–10 | Reproduction, bounded repair, isolated testing, independent verification | ✅ |
+| 11 | Duplicate financial effects prevented | ✅ tested |
 | 12 | Indeterminate handled | ✅ |
-| 13 | Security boundaries enforced | ✅ (see gaps in SECURITY_MODEL) |
-| 14–17 | Unit / integration / browser / adversarial tests pass | ✅ |
-| 18 | Complete demo succeeds | ✅ deterministic mode |
-| 19 | Metrics from actual runs | ✅ baseline + live Gemini |
-| 20 | Documentation accurate | ✅ as of 2026-10-31 |
-| 21 | Repo clean and reproducible | ✅ local |
-| 22 | CI verified | ✅ GitHub Actions green (run 41154637560) |
+| 13 | Security boundaries enforced | ✅ incl. public-demo controls; gaps in SECURITY_MODEL |
+| 14–17 | Unit / integration / browser / adversarial tests pass | ✅ 2026-11-18 (VERIFICATION_REPORT) |
+| 18 | Complete demo succeeds | ✅ live Gemini and baseline, local; ❌ no public URL |
+| 19 | Metrics from actual runs | ✅ committed in `evidence/` |
+| 20 | Documentation accurate | ✅ as of 2026-11-18 |
+| 21 | Repo clean and reproducible | 🟡 uncommitted 2026-11-18 changes awaiting founder OK |
+| 22 | CI verified | ✅ for `de04559`; ⏳ the new commit needs a run after push |
 | 23 | Multimodal | ❌ not started |
-| 24 | Live vs replay clearly labelled | ✅ |
-| 25 | Competition materials | 🟡 partial |
-| 26 | Limitations documented | ✅ |
+| 24 | Live vs baseline clearly labelled | ✅ UI, reports, evals, docs |
+| 25 | Competition materials | 🟡 written; recordings, deck design, validation evidence are founder actions |
+| 26 | Limitations documented | ✅ `docs/LIMITATIONS.md` |
+| 27 | Deployable container | ✅ built and verified locally; ❌ not deployed |
 
-Not production-ready: needs auth, OS isolation, real connectors, monitoring and a live-model reliability evaluation.
+Not production-ready: needs per-run OS isolation, real connectors, user identity, monitoring, and a larger live
+reliability evaluation.

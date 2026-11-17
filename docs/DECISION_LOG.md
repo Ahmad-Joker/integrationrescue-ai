@@ -22,3 +22,17 @@
   free-tier use is unbilled and paid rates were not verified.
 - **2026-10-31 — Repo `.env` is loaded at startup** (real env vars win); tests set `IR_SKIP_DOTENV`; child processes
   never inherit it.
+- **2026-11-18 — Public demo = one container on a long-lived host (Render Blueprint), not serverless.** Background
+  investigations, child processes and SQLite need a persistent process. State is ephemeral and fictional; the demo
+  re-seeds itself. Free plan by default; a non-sleeping paid plan is a founder decision.
+- **2026-11-18 — Competition access control is one shared access code** for state-changing requests, plus a separate
+  admin code for resets. No accounts. Reads stay open because all data is fictional. Auto-approval and UI eval runs
+  are disabled in demo mode; live incidents have a daily cap to protect the free-tier quota.
+- **2026-11-18 — Kernel resource limits for customer code via an exec trampoline** (POSIX), because `preexec_fn` is
+  unsafe in a threaded server. Per-run filesystem and network isolation remains open (documented residual risk).
+- **2026-11-18 — Model outages are recorded as `provider_error`** (infrastructure/budget/model) and shown as MODEL
+  UNAVAILABLE, separately from the outcome.
+- **2026-11-18 — Evaluation results are committed** under `evidence/eval/` (they contain no paths or personal data)
+  so judges and a fresh deployment see the same numbers the docs quote.
+- **2026-11-18 — npm audit policy**: shipped (runtime) dependencies must have no high advisories; build tooling is
+  audited at critical, because picomatch (Vite build-time) has a high ReDoS advisory with no fixed release.

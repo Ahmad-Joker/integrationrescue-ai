@@ -50,6 +50,15 @@ generate regression test from the captured event + ledger (not from the agent) �
 copy → full suite must PASS on patched copy → clone world, replay original event, verify → await human approval →
 apply to incident repo, redeliver event → verify again.
 
+## Deployment shape (competition demo)
+One process serves the product API, the simulator API (`/sim`) and the built dashboard (`IR_STATIC_DIR`, SPA
+fallback). `config.py` validates the environment at import; `security/access.py` guards state-changing requests
+(access code, admin code, rate limit, body size) and adds security headers; `demo_seed.py` provides featured
+fictional incidents and seeds baseline examples that stop at the approval gate. Committed evaluation results
+(`evidence/eval`) are merged with local runs for the Evaluation lab. Packaged by the root `Dockerfile` (non-root,
+state in `/data`); see [DEPLOYMENT.md](DEPLOYMENT.md). `comparison.py` exports incidents for an external coding
+agent and scores the result with the same verifier.
+
 ## Key decisions
 See [DECISION_LOG.md](DECISION_LOG.md). Notably: single orchestrator instead of multi-agent; no LangGraph (the state
 machine is ~400 lines and fully inspectable); SQLite per environment for cheap cloning; deterministic baseline doubles as

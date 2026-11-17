@@ -1,14 +1,18 @@
-# Next actions (ordered)
+# Next actions (ordered, updated 2026-11-18)
+
+Founder-only actions (accounts, recordings, interviews, submission) are tracked in
+[competition/USER_ACTIONS.md](../competition/USER_ACTIONS.md).
 
 | # | Task | Importance | Files | Depends on | Done when | Status |
 |---|---|---|---|---|---|---|
-| 1 | Live eval: Gemini recorded (see EVALUATION_PLAN); rerun on the 2 new families and more schema_drift runs; Claude when a key exists | P0 | evaluation.py | free-tier quota / founder billing decision | live rows for all 5 families; code repair rate measured | partial |
-| 2 | Create GitHub repo `integrationrescue-ai`, push, confirm CI green | P1 | .github/workflows/ci.yml | founder approval | CI run inspected and passing | done (public; run 41154637560 green) |
-| 3 | Incident families: done signing_key_rotated (credential expiry) and ack_timeout (timeout-after-commit, NO_ACTION_NEEDED); still todo CRM tenant field mapping (needs CRM simulator) and duplicate side effect | P1 | scenarios/, simulators/ | — | each has setup, defect, held-out variant, tests, eval rows | partial (5 of 8) |
-| 4 | General coding-agent baseline comparison harness | P1 | evaluation.py | #1 | same verifier scores both; report failures | todo |
-| 5 | Screenshot analysis via vision model → structured observations cross-checked with API state | P3 | agent/, api.py | #1 | text-only vs multimodal comparison recorded | todo |
-| 6 | Playwright "customer app" page + browser tool restricted to local origin | P3 | simulators/, agent/tools.py | — | agent can reproduce "Upgrade to Pro" banner and verify after fix | todo |
-| 7 | OS-level isolation for child processes (Windows job objects or containers when Docker works) | P1 | simulators/sync_service.py, agent/sandbox.py | — | CPU/mem limits enforced, tested | todo |
-| 8 | Mark confirmed hypothesis on diagnosis; show it in UI | P2 | agent/providers.py | — | H3 shows "confirmed" | done |
-| 9 | Competition materials: pitch deck, scripts, demo video plan, Q&A, business model | P3 | competition/ | — | all listed files exist and match recorded evidence | partial |
-| 10 | Confirm official competition rules, deadline, Youth eligibility | P0 (business) | docs/PRODUCT_REQUIREMENTS.md | founder | official source cited | blocked on founder |
+| 1 | Push the 2026-11-18 changes; confirm all three CI jobs are green | P0 | .github/workflows/ci.yml | founder OK to push | run green on GitHub | todo (needs OK) |
+| 2 | Deploy the container and verify the public URL (deterministic + live) | P0 | Dockerfile, render.yaml, scripts/verify_deployment.py | hosting account (founder) | two 15/15 runs against the URL recorded in JUDGE_ACCESS | ready, blocked on account |
+| 3 | Record the 2-minute live demo and the 6-minute pitch | P0 | competition/DEMO_*, PITCH_* | #2 or local demo | videos uploaded unlisted | founder |
+| 4 | Customer discovery: 8–10 interviews, fill VALIDATION_EVIDENCE | P0 (business) | competition/PROBLEM_VALIDATION_PLAN.md | founder | evidence file filled with real notes | todo |
+| 5 | Run the coding-agent comparison (10 cases) | P1 | integrationrescue/comparison.py, competition/COMPARISON_PROTOCOL.md | a coding-agent account; independent operator ideally | `evidence/comparison/RESULTS.md` filled | harness done, runs todo |
+| 6 | More live runs: schema_drift (code repair) and a stronger model | P1 | evaluation.py | quota / billing decision | code-repair rate on ≥6 scored runs | partial |
+| 7 | Incident families: CRM field mapping (needs CRM simulator), duplicate side effect | P1 | scenarios/, simulators/ | — | setup, defect, held-out variant, tests, eval rows | 5 of 8 |
+| 8 | Per-run OS isolation for customer code (gVisor/Firecracker/container per run) | P1 | security/child.py, agent/sandbox.py | hosting that allows it | filesystem + network isolation tested | rlimits done; isolation todo |
+| 9 | Screenshot analysis via a vision model, cross-checked with API state | P3 | agent/, api.py | #6 | text-only vs multimodal comparison recorded | todo |
+| 10 | Playwright "customer app" page + browser tool restricted to the local origin | P3 | simulators/, agent/tools.py | — | agent reproduces the "Upgrade to Pro" banner | todo |
+| 11 | Confirm the official rules: exact deadline day, video lengths, required documents | P0 (business) | competition/SUBMISSION_READINESS.md | founder (portal access) | portal text cited | public page read 2026-11-18: "January 2027", no day |

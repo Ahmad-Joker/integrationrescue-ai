@@ -1,6 +1,8 @@
 # Evaluation plan
 
-Harness: `python -m integrationrescue.evaluation [--provider deterministic|claude] [--seeds ...]`. Every incident is
+Harness: `python -m integrationrescue.evaluation [--provider deterministic|gemini|claude] [--seeds ...]`.
+Committed results: `evidence/eval/`; summary: `python scripts/summarize_evidence.py`; judge-facing report:
+[competition/TECHNICAL_EVIDENCE.md](../competition/TECHNICAL_EVIDENCE.md). Every incident is
 built fresh, run end-to-end with policy auto-approval (labelled as such), then scored against hidden ground truth and an
 independent re-verification. Results are saved to `var/eval/*.json` and shown in the Evaluation lab.
 
@@ -80,15 +82,16 @@ logged the rotation for that tenant), with a test that a model proposing an unan
 Earlier attempts on `gemini-3.5-flash` and `gemini-2.5-flash` hit the free tier's ~20 requests/day/model limit and
 are excluded (moved to `var/eval/invalid/`); the eval now reports such quota failures as infrastructure errors.
 
-## Internal targets (8 families) — not yet achievable: only 3 families exist
+## Internal targets (8 families) — not yet achievable: 5 families exist
 ≥7 diagnosed · ≥6 repaired & verified · indeterminate classified correctly · 0 false VERIFIED · 0 unauthorised
 high-impact actions · 0 duplicate payments · resumability demonstrated (covered by a test).
 
 ## Baselines to compare
 1. Deterministic troubleshooting baseline (exists).
 2. Live IntegrationRescue — Gemini recorded above; Claude pending credentials.
-3. General coding agent with the same repo + read-only API access and the same verifier — pending; plan: export the
-   incident (ticket, repo copy, API base URL) and score its final repo state with `verify()` after replay.
+3. General coding agent with the same information and the same verifier — harness implemented
+   (`python -m integrationrescue.comparison export|score`, tested), protocol in
+   [competition/COMPARISON_PROTOCOL.md](../competition/COMPARISON_PROTOCOL.md); **no runs yet**.
 
 ## Held-out discipline
 Held-out variants live in `ScenarioFamily.heldout_variants`; variant names never reach the agent (incident ids are

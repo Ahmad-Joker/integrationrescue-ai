@@ -19,7 +19,11 @@ Concept-stage: never claim customers, traction or benchmark wins that are not re
 - `backend/integrationrescue/verification/` — independent read-only verifier (only source of VERIFIED)
 - `backend/integrationrescue/security/policy.py` — path/patch/redaction policy
 - `frontend/` — Vite + React + TS dashboard; `frontend/e2e/` Playwright tests
-- `docs/`, `competition/`
+- `backend/integrationrescue/config.py`, `security/access.py`, `demo_seed.py` — public demo mode (access code, limits, seeds)
+- `backend/integrationrescue/comparison.py` — export/score incidents for a general coding agent
+- `evidence/` — committed eval results and live-run records (quote numbers only from here)
+- `Dockerfile`, `render.yaml` — single-container deployment
+- `docs/`, `competition/` (founder-only tasks: `competition/USER_ACTIONS.md`)
 
 ## Commands (PowerShell, from repo root)
 - Install: `./scripts/dev.ps1 install`
@@ -28,6 +32,8 @@ Concept-stage: never claim customers, traction or benchmark wins that are not re
 - Tests: `cd backend; ..\.venv\Scripts\python -m pytest` · lint `..\.venv\Scripts\ruff check .`
 - Frontend: `npm run lint --prefix frontend`, `npm run build --prefix frontend`, `cd frontend; npx playwright test`
 - Eval: `./scripts/dev.ps1 eval` · Reset synthetic state: `./scripts/dev.ps1 reset`
+- Judge demo (container-equivalent, port 8080): `./scripts/dev.ps1 judge-demo` · end-to-end check: `./scripts/dev.ps1 verify --url <url>` (needs `$env:IR_ACCESS_TOKEN`)
+- Evidence: `python scripts/summarize_evidence.py` · links: `python scripts/check_links.py` · deck: `python scripts/build_deck.py`
 
 ## Non-negotiable rules
 - VERIFIED only comes from `verification.verify` reading the environment read-only. Never let agent output, prompts or patches influence the verifier or its expected state.

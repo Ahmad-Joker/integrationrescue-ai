@@ -1,32 +1,36 @@
-# Project status — updated 2026-10-31
+# Project status (updated 2026-11-18)
 
-**Phase:** P0 core complete; P1/P2 partially complete. First non-negotiable milestone **met in deterministic mode**.
+**Phase:** competition prototype, submission preparation. Core loop complete. Public demo mode and container are
+ready but not deployed. Business validation has not started.
 
-## Verified (tests executed 2026-10-31)
-- Backend: 79 pytest tests pass (unit, integration, adversarial, API, Claude-adapter protocol), ruff clean.
-- Frontend: oxlint clean, `tsc -b && vite build` succeeds, 2 Playwright tests pass (full approve→VERIFIED journey with
-  duplicate-webhook fault; ledger outage → INDETERMINATE).
-- Manual browser walkthrough of the same journey: no console errors.
-- Evaluation recorded: see EVALUATION_PLAN.md.
+## Verified on 2026-11-18 (details: [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md))
+- Backend: full pytest suite passes on Windows (Python 3.13) and on Linux inside the container image (Python 3.12),
+  including POSIX resource-limit tests. ruff clean.
+- Frontend: oxlint clean, `tsc -b && vite build` succeeds, Playwright browser tests pass.
+- Container: image builds, refuses to start without an access code, runs as uid 10001, and passes
+  `scripts/verify_deployment.py` 15/15 (deterministic).
+- Live Gemini end-to-end on the local demo server: 15/15, VERIFIED ([evidence/live](../evidence/live/README.md)).
+- CI: the last pushed commit (`de04559`) was green on GitHub (run 41254875454, 2026-11-01). **The changes from
+  2026-11-18 are not yet pushed, so they have no CI run.**
 
 ## Implemented
-Simulators (billing, entitlements, webhooks, logs) · sync service running customer code in child processes · scenario
-families: payment_entitlement (4 variants), schema_drift (2), state_unavailable (1), signing_key_rotated (2),
-ack_timeout (2; correct outcome NO_ACTION_NEEDED) · orchestrator with persistence,
-resume, approval gate · 18 diagnostic tools + 5 control/terminal tools · Claude provider + deterministic baseline ·
-sandbox + regression generation · independent verifier · reports · product API · dashboard (7 screens) · eval harness ·
-CI workflow file.
+Simulators (billing, entitlements, webhooks, logs) · sync service running customer code in limited child processes ·
+5 incident families: payment_entitlement (4 variants), schema_drift (2), state_unavailable (1),
+signing_key_rotated (2), ack_timeout (2) · orchestrator with persistence, resume and the approval gate ·
+18 diagnostic tools + 6 control/terminal tools · live Gemini provider, Claude provider (fake-client tested) and the
+deterministic baseline · sandbox + regression generation · independent verifier · reports · product API · dashboard ·
+evaluation harness · coding-agent comparison harness · public demo mode (access code, admin reset, rate limit,
+live-run cap, featured incidents, seeded examples, security headers, config validation) · Dockerfile, Render
+Blueprint, deployment check script · CI with backend, frontend and container jobs.
 
-## Known defects / limitations
-- Live mode runs on Gemini free tier (`gemini-3.1-flash-lite`): config repairs 8/8 VERIFIED in live run 2; code repair
-  not established (see EVALUATION_PLAN). Claude adapter still only tested with a fake client (no Anthropic key).
-- Baseline cannot repair code defects (schema_drift ends DIAGNOSED) — by design, but it means no recorded code repair by an agent yet.
-- Screenshots are stored but not analysed; no CRM simulator; 3 of 8 planned incident families missing
-  (CRM field mapping, duplicate side effect, one more).
-- Child processes not OS-sandboxed; local API unauthenticated.
+## Evaluation (raw files in `evidence/eval/`)
+Live Gemini: diagnosis 31/31 scored; after the edit-schema fix the expected outcome was reached in 16/17 runs.
+Code repair is not established (0/5 scored). Baseline: 18/22. 0 false success claims and 0 duplicate charges in 72
+runs. See [competition/TECHNICAL_EVIDENCE.md](../competition/TECHNICAL_EVIDENCE.md).
 
-## CI
-Workflow at `.github/workflows/ci.yml`; **never run** — no GitHub remote exists yet (needs founder approval).
+## Known gaps
+See [LIMITATIONS.md](LIMITATIONS.md): no deployment, no customer validation, no coding-agent comparison run,
+unreliable live code repair, no per-run OS isolation, 3 of 8 families missing, no vision analysis.
 
 ## Deployment
-None. Local only.
+None. Deployment-ready: [DEPLOYMENT.md](DEPLOYMENT.md). Needs a founder-owned hosting account.

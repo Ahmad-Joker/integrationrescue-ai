@@ -3,39 +3,82 @@
 from __future__ import annotations
 
 import os
+import shutil
 import threading
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Response
 from pydantic import BaseModel, Field
 
 from . import __version__
 from .agent.orchestrator import IncidentService
 from .agent.providers import ProviderError, make_provider
 from .agent.store import Store
+from .config import Settings, load_settings
+from .demo_seed import FEATURED, seed_demo
 from .evaluation import latest_results, run_suite
-from .paths import load_env_file
+from .paths import load_env_file, var_dir
 from .scenarios import REGISTRY
+from .security.access import ACCESS_HEADER, ADMIN_HEADER, DailyCap, RateLimiter, client_key, token_ok
 from .security.policy import redact
 from .simulators.api import build_router
 from .simulators.world import World
 
 load_env_file()
+SETTINGS: Settings = load_settings()  # raises ConfigError: a misconfigured public demo must not start
 
 MAX_UPLOAD_BYTES = 2_000_000
+MAX_BODY_BYTES = 2_500_000
 ALLOWED_UPLOADS = {".log", ".txt", ".json", ".png", ".jpg", ".jpeg"}
+MUTATING = {"POST", "PUT", "PATCH", "DELETE"}
 
 app = FastAPI(title="IntegrationRescue", version=__version__)
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-                   allow_methods=["GET", "POST"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=list(SETTINGS.cors_origins), allow_methods=["GET", "POST"],
+                   allow_headers=["content-type", ACCESS_HEADER, ADMIN_HEADER])
 
 _svc: IncidentService | None = None
 _running: set[str] = set()
 _lock = threading.Lock()
 _eval_state: dict[str, Any] = {"running": False, "error": None}
+_limiter = RateLimiter(SETTINGS.rate_limit_per_min)
+_live_cap = DailyCap(SETTINGS.max_live_incidents_per_day)
+
+
+def _deny(status: int, detail: str) -> JSONResponse:
+    return JSONResponse({"detail": detail}, status_code=status)
+
+
+@app.middleware("http")
+async def guard(request: Request, call_next: Any) -> Response:
+    """Access code, admin code, body size and rate limit for state-changing requests; security headers for all."""
+    path = request.url.path
+    if request.method in MUTATING and path.startswith(("/api/", "/sim/")):
+        try:
+            if int(request.headers.get("content-length") or 0) > MAX_BODY_BYTES:
+                return _deny(413, "request body too large")
+        except ValueError:
+            return _deny(400, "invalid content-length")
+        if path.startswith("/api/admin/"):
+            if not SETTINGS.admin_token:
+                return _deny(404, "admin endpoints are disabled (IR_ADMIN_TOKEN not set)")
+            if not token_ok(request.headers.get(ADMIN_HEADER), SETTINGS.admin_token):
+                return _deny(401, "admin code required")
+        elif not token_ok(request.headers.get(ACCESS_HEADER), SETTINGS.access_token):
+            return _deny(401, "access code required")
+        if not _limiter.allow(client_key(request, SETTINGS.trust_proxy)):
+            return _deny(429, "too many requests; wait a minute and retry")
+    response: Response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    if not path.startswith(("/docs", "/redoc")):  # Swagger UI loads its assets from a CDN
+        response.headers.setdefault("Content-Security-Policy",
+                                    "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
+                                    "frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+    return response
 
 
 def svc() -> IncidentService:
@@ -52,7 +95,7 @@ class ScenarioRequest(BaseModel):
     family: str = "payment_entitlement"
     variant: str = "stale_price_id"
     seed: int = Field(default=42, ge=0, le=10_000_000)
-    provider: str = "deterministic"
+    provider: str | None = Field(default=None, max_length=40)  # None: the server's IR_PROVIDER
     faults: dict[str, Any] = Field(default_factory=dict)
     auto_approve: bool = False
     description: str | None = Field(default=None, max_length=5000)
@@ -65,6 +108,12 @@ class Decision(BaseModel):
 
 
 ALLOWED_FAULTS = {"duplicate_delivery", "lost_ack", "billing_ledger_unavailable"}
+
+
+def _ensure_capacity() -> None:
+    with _lock:
+        if len(_running) >= SETTINGS.max_concurrent_runs:
+            raise HTTPException(429, f"{len(_running)} investigations already running; retry in a minute")
 
 
 def _run_bg(iid: str) -> None:
@@ -83,12 +132,35 @@ def _run_bg(iid: str) -> None:
     threading.Thread(target=work, daemon=True).start()
 
 
+def _live_providers() -> dict[str, bool]:
+    return {"claude": bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")),
+            "gemini": bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))}
+
+
+@app.on_event("startup")
+def _startup() -> None:
+    if SETTINGS.demo_mode and not svc().store.list(limit=1):
+        threading.Thread(target=seed_demo, args=(svc(),), daemon=True).start()
+
+
 @app.get("/api/health")
 def health() -> dict[str, Any]:
-    live = {"claude": bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")),
-            "gemini": bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY"))}
+    live = _live_providers()
     return {"status": "ok", "version": __version__, "live_model_configured": any(live.values()), "live_providers": live,
-            "default_provider": os.environ.get("IR_PROVIDER", "deterministic")}
+            "default_provider": SETTINGS.default_provider, "live_incidents_remaining_today": _live_cap.remaining(),
+            "data": "simulated services, fictional data", **SETTINGS.public()}
+
+
+@app.get("/api/demo/featured")
+def featured() -> list[dict[str, Any]]:
+    """Curated fictional incidents for judges (presets for the New incident form)."""
+    return FEATURED
+
+
+@app.post("/api/access/check")
+def access_check() -> dict[str, bool]:
+    # The guard middleware already validated the access code; this lets the dashboard test a code before use.
+    return {"ok": True}
 
 
 @app.get("/api/scenarios")
@@ -105,11 +177,19 @@ def create_incident(req: ScenarioRequest) -> dict[str, Any]:
         raise HTTPException(400, "unknown scenario")
     if set(req.faults) - ALLOWED_FAULTS:
         raise HTTPException(400, f"faults must be among {sorted(ALLOWED_FAULTS)}")
+    if req.auto_approve and SETTINGS.demo_mode:
+        raise HTTPException(403, "auto-approval is disabled in the competition demo: a human approves every repair")
+    provider = (req.provider or SETTINGS.default_provider).lower()
     try:
-        make_provider(req.provider)
+        prov = make_provider(provider)
     except ProviderError as exc:
         raise HTTPException(400, str(exc)) from exc
-    iid = svc().create_from_scenario(req.family, req.variant, req.seed, provider=req.provider,
+    if req.autorun:
+        _ensure_capacity()
+    if prov.mode == "live" and SETTINGS.demo_mode and not _live_cap.take():
+        raise HTTPException(429, "today's live-model incident limit is reached (protects the model quota); "
+                                 "the deterministic baseline is still available")
+    iid = svc().create_from_scenario(req.family, req.variant, req.seed, provider=provider,
                                      auto_approve=req.auto_approve, faults=req.faults)
     if req.description:
         inc = svc().store.get(iid)
@@ -164,7 +244,7 @@ def get_incident(iid: str) -> dict[str, Any]:
         "trace": d["trace"], "hypotheses": d["hypotheses"], "diagnosis": d["diagnosis"],
         "reproduction": d["reproduction"], "attempts": d["attempts"], "patch": d["patch"],
         "approval": d["approval"], "verification": d["verification"], "report": d["report"],
-        "usage": d.get("usage", {}),
+        "usage": d.get("usage", {}), "provider_error": d.get("provider_error"),
         "timeline": svc().store.timeline(iid),
     }
 
@@ -173,12 +253,15 @@ def get_incident(iid: str) -> dict[str, Any]:
 def run_incident(iid: str) -> dict[str, Any]:
     if not svc().store.get(iid):
         raise HTTPException(404)
+    if iid not in _running:
+        _ensure_capacity()
     _run_bg(iid)
     return {"started": True}
 
 
 @app.post("/api/incidents/{iid}/approve")
 def approve(iid: str, d: Decision) -> dict[str, Any]:
+    _ensure_capacity()
     try:
         svc().approve(iid, d.approver)
     except ValueError as exc:
@@ -189,6 +272,7 @@ def approve(iid: str, d: Decision) -> dict[str, Any]:
 
 @app.post("/api/incidents/{iid}/reject")
 def reject(iid: str, d: Decision) -> dict[str, Any]:
+    _ensure_capacity()
     try:
         svc().reject(iid, d.approver, d.reason or "rejected")
     except ValueError as exc:
@@ -232,6 +316,8 @@ class EvalRequest(BaseModel):
 @app.post("/api/eval/run")
 def eval_run(req: EvalRequest) -> dict[str, Any]:
     # Only the deterministic suite can be launched from the UI so it never spends model credits.
+    if SETTINGS.demo_mode:
+        raise HTTPException(403, "running the evaluation suite is disabled on the public demo; results are shown")
     if _eval_state["running"]:
         raise HTTPException(409, "evaluation already running")
     _eval_state.update(running=True, error=None)
@@ -251,3 +337,31 @@ def eval_run(req: EvalRequest) -> dict[str, Any]:
 @app.get("/api/eval/results")
 def eval_results() -> dict[str, Any]:
     return {"state": _eval_state, "results": latest_results()}
+
+
+@app.post("/api/admin/reset")
+def admin_reset() -> dict[str, Any]:
+    """Delete all fictional demo state and re-seed. Guarded by IR_ADMIN_TOKEN in the middleware."""
+    global _svc
+    with _lock:
+        if _running:
+            raise HTTPException(409, "investigations are running; retry when they finish")
+        _svc = None
+        root = var_dir()
+        shutil.rmtree(root / "runs", ignore_errors=True)
+        (root / "incidents.db").unlink(missing_ok=True)
+    seeded = seed_demo(svc()) if SETTINGS.demo_mode else []
+    return {"reset": True, "seeded": seeded}
+
+
+# ------------------------------------------------------------------ dashboard (single-service deployment)
+@app.api_route("/{path:path}", methods=["GET", "HEAD"], include_in_schema=False)
+def dashboard(path: str) -> Response:
+    """Serve the built dashboard when IR_STATIC_DIR is set; unknown paths fall back to index.html (hash routing)."""
+    if not SETTINGS.static_dir or path.startswith(("api/", "sim/")):
+        raise HTTPException(404)
+    root = Path(SETTINGS.static_dir).resolve()
+    target = (root / path).resolve()
+    if path and target.is_file() and target.is_relative_to(root):
+        return FileResponse(target)
+    return FileResponse(root / "index.html", headers={"Cache-Control": "no-cache"})

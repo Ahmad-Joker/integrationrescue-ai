@@ -6,7 +6,7 @@ test('operator investigates, approves and sees an independently verified recover
 
   await page.goto('/#/new')
   await page.getByLabel('Seed').fill(String(Date.now() % 100000))
-  await page.getByText('Duplicate webhook delivery').click()
+  await page.getByRole('checkbox', { name: 'Duplicate webhook delivery' }).check()
   await page.getByRole('button', { name: 'Create and investigate' }).click()
 
   await expect(page).toHaveURL(/#\/incident\/inc_/)
@@ -32,9 +32,21 @@ test('operator investigates, approves and sees an independently verified recover
 test('ledger outage yields INDETERMINATE, never VERIFIED', async ({ page }) => {
   await page.goto('/#/new')
   await page.getByLabel('Seed').fill(String((Date.now() % 100000) + 1))
-  await page.getByText('Billing ledger unavailable').click()
+  await page.getByRole('checkbox', { name: 'Billing ledger unavailable' }).check()
   await page.getByRole('button', { name: 'Create and investigate' }).click()
   const outcome = page.locator('.badge', { hasText: /^INDETERMINATE$/ })
   await expect(outcome.first()).toBeVisible({ timeout: 90_000 })
   await expect(page.locator('.badge', { hasText: /^VERIFIED$/ })).toHaveCount(0)
+})
+
+test('featured preset runs the timeout false alarm to NO ACTION NEEDED without a patch', async ({ page }) => {
+  await page.goto('/#/new')
+  await page.getByRole('button', { name: /Timeout alerts after a double click/ }).click()
+  await expect(page.getByLabel('Integration environment')).toHaveValue('ack_timeout')
+  await page.getByLabel('Seed').fill(String((Date.now() % 100000) + 2))
+  await page.getByRole('button', { name: 'Create and investigate' }).click()
+  await expect(page.getByText('DETERMINISTIC MODE')).toBeVisible()
+  await expect(page.locator('.badge', { hasText: /^NO ACTION NEEDED$/ }).first()).toBeVisible({ timeout: 90_000 })
+  await page.getByRole('tab', { name: 'Repair' }).click()
+  await expect(page.getByLabel('patch diff')).toHaveCount(0)
 })

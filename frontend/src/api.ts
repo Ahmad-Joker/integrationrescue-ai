@@ -104,6 +104,7 @@ export interface Incident {
   verification: Verification
   report: { mode_label: string; limitations: string[]; usage: Record<string, unknown> } | null
   usage: Record<string, unknown>
+  provider_error?: { kind: 'infrastructure' | 'budget' | 'model'; message: string } | null
   timeline: TimelineEvent[]
 }
 
@@ -121,6 +122,7 @@ export interface EvalSummary {
   outcome_matches_expected_rate: number
   false_verified: number
   duplicate_charges: number
+  infra_errors?: number
   mean_tool_calls: number
   mean_duration_s: number
   by_family: Record<string, { runs: number; verified: number; correct_diagnosis: number; expected_outcome: number }>
@@ -142,8 +144,36 @@ export interface EvalResult {
     tool_calls: number
     duration_s: number
     false_verified: boolean
+    infra_error?: string | null
   }[]
   path: string
+  recorded?: boolean
+}
+
+export interface Health {
+  status: string
+  version: string
+  live_model_configured: boolean
+  live_providers?: Record<string, boolean>
+  default_provider?: string
+  demo_mode?: boolean
+  access_required?: boolean
+  auto_approve_allowed?: boolean
+  eval_run_allowed?: boolean
+  live_incidents_remaining_today?: number
+}
+
+export interface Featured {
+  key: string
+  title: string
+  impact: string
+  family: string
+  variant: string
+  seed: number
+  faults: Record<string, boolean>
+  recommended_provider: string
+  expected_kind: string
+  evidence: string
 }
 
 export interface Stats {
@@ -154,8 +184,30 @@ export interface Stats {
   latest_eval: EvalSummary | null
 }
 
+const ACCESS_KEY = 'ir_access_code'
+
+/** Judge access code for the public demo; kept for this browser tab only, sent on state-changing requests. */
+export const access = {
+  get: (): string => {
+    try {
+      return sessionStorage.getItem(ACCESS_KEY) ?? ''
+    } catch {
+      return ''
+    }
+  },
+  set: (code: string) => {
+    try {
+      sessionStorage.setItem(ACCESS_KEY, code)
+    } catch {
+      /* storage unavailable: the code lives only for this page view */
+    }
+  },
+}
+
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, init)
+  const headers = new Headers(init?.headers)
+  if (init?.method && init.method !== 'GET' && access.get()) headers.set('x-access-token', access.get())
+  const res = await fetch(path, { ...init, headers })
   if (!res.ok) {
     let detail = res.statusText
     try {
@@ -172,12 +224,9 @@ const post = <T,>(path: string, body: unknown) =>
   req<T>(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
 
 export const api = {
-  health: () => req<{
-      status: string
-      live_model_configured: boolean
-      live_providers?: Record<string, boolean>
-      version: string
-    }>('/api/health'),
+  health: () => req<Health>('/api/health'),
+  featured: () => req<Featured[]>('/api/demo/featured'),
+  checkAccess: () => post<{ ok: boolean }>('/api/access/check', {}),
   stats: () => req<Stats>('/api/stats'),
   incidents: () => req<IncidentRow[]>('/api/incidents'),
   incident: (id: string) => req<Incident>(`/api/incidents/${id}`),

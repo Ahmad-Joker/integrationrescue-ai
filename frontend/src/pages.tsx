@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { api } from './api'
-import type { Incident, Scenario } from './api'
+import type { Featured, Health, Incident, Scenario } from './api'
 import type { Verification } from './api'
 import { fmt, usePoll } from './hooks'
-import { Diff, ModeBanner, OutcomeBadge, PhaseBadge } from './ui'
+import { Diff, ModeBanner, OutcomeBadge, PhaseBadge, ProviderErrorBanner } from './ui'
 
 const go = (path: string) => {
   window.location.hash = path
@@ -114,7 +114,10 @@ const FAULTS: [string, string][] = [
 
 export function NewIncident() {
   const [scenarios, setScenarios] = useState<Scenario[]>([])
-  const [live, setLive] = useState<Record<string, boolean>>({})
+  const [featured, setFeatured] = useState<Featured[]>([])
+  const [health, setHealth] = useState<Health | null>(null)
+  const live = health?.live_providers ?? {}
+  const [picked, setPicked] = useState<string | null>(null)
   const [family, setFamily] = useState('payment_entitlement')
   const [variant, setVariant] = useState('')
   const [seed, setSeed] = useState(42)
@@ -127,8 +130,21 @@ export function NewIncident() {
 
   useEffect(() => {
     api.scenarios().then(setScenarios).catch((e) => setError(String(e)))
-    api.health().then((h) => setLive(h.live_providers ?? {})).catch(() => undefined)
+    api.featured().then(setFeatured).catch(() => undefined)
+    api.health().then((h) => {
+      setHealth(h)
+      const def = h.default_provider === 'google' ? 'gemini' : h.default_provider
+      if (def && (def === 'deterministic' || h.live_providers?.[def])) setProvider(def)
+    }).catch(() => undefined)
   }, [])
+  const applyPreset = (f: Featured) => {
+    setPicked(f.key)
+    setFamily(f.family)
+    setVariant(f.variant)
+    setSeed(f.seed)
+    setFaults(f.faults)
+    if (live[f.recommended_provider]) setProvider(f.recommended_provider)
+  }
   const fam = scenarios.find((s) => s.family === family)
   const variants = fam ? [...fam.variants, ...fam.heldout_variants] : []
   const v = variants.includes(variant) ? variant : (variants[0] ?? '')
@@ -157,6 +173,32 @@ export function NewIncident() {
         Creates a fresh, isolated simulated environment that reproduces a reported integration failure, then starts
         the investigation. All data is fictional.
       </p>
+      {featured.length > 0 && (
+        <div className="panel" style={{ marginBottom: 16 }}>
+          <h2>Featured demo incidents</h2>
+          <p className="muted" style={{ marginTop: 0 }}>
+            Pick one to fill the form. Each builds a fresh simulated environment; the outcome is decided by the run,
+            not scripted.
+            {health?.demo_mode && health.live_incidents_remaining_today !== undefined &&
+              ` Live-model runs left today: ${health.live_incidents_remaining_today}.`}
+          </p>
+          <div className="grid featured">
+            {featured.map((f) => (
+              <button
+                key={f.key}
+                className={`preset ${picked === f.key ? 'picked' : ''}`}
+                onClick={() => applyPreset(f)}
+                aria-pressed={picked === f.key}
+              >
+                <strong>{f.title}</strong>
+                <span>{f.impact}</span>
+                <span className="muted">Typical result: {f.expected_kind}</span>
+              </button>
+            ))}
+          </div>
+          {picked && <p className="muted">{featured.find((f) => f.key === picked)?.evidence}</p>}
+        </div>
+      )}
       <div className="grid two">
         <div className="panel">
           <h2>Environment</h2>
@@ -260,6 +302,7 @@ export function IncidentView({ id }: { id: string }) {
       </div>
       <p className="sub mono">{inc.id}</p>
       <ModeBanner mode={inc.mode} provider={inc.provider} />
+      {inc.provider_error && <ProviderErrorBanner error={inc.provider_error} />}
       <div className="steps" aria-label="pipeline">
         {PIPELINE.map(([p, label], i) => (
           <span key={p} className={`step ${i < idx || inc.phase === 'done' ? 'done' : i === idx ? 'current' : ''}`}>
@@ -574,7 +617,11 @@ function Report({ inc }: { inc: Incident }) {
 // ---------------------------------------------------------------- Eval lab
 export function EvalLab() {
   const [running, setRunning] = useState(false)
+  const [allowed, setAllowed] = useState(true)
   const { data, error, reload } = usePoll(api.evalResults, 2500, [])
+  useEffect(() => {
+    api.health().then((h) => setAllowed(h.eval_run_allowed !== false)).catch(() => undefined)
+  }, [])
   const busy = running || !!data?.state.running
   const start = async () => {
     setRunning(true)
@@ -585,7 +632,10 @@ export function EvalLab() {
       reload()
     }
   }
-  const latest = data?.results[0]
+  const [sel, setSel] = useState(0)
+  const results = data?.results ?? []
+  const latest = results[Math.min(sel, Math.max(0, results.length - 1))]
+  const isLive = (p: string) => p !== 'deterministic' && p !== 'heuristic-baseline'
   return (
     <>
       <h1>Evaluation lab</h1>
@@ -594,19 +644,38 @@ export function EvalLab() {
         From the UI only the deterministic suite can be launched so no model credits are spent.
       </p>
       <div className="row" style={{ marginBottom: 16 }}>
-        <button className="primary" onClick={start} disabled={busy}>
+        <button className="primary" onClick={start} disabled={busy || !allowed}>
           {busy ? 'Running suite…' : 'Run deterministic suite'}
         </button>
+        {!allowed && <span className="muted">Disabled on the public demo; recorded results are shown below.</span>}
         {data?.state.error && <span className="err">{data.state.error}</span>}
         {error && <span className="err">{error}</span>}
       </div>
+      {results.length > 1 && (
+        <div className="row" role="tablist" aria-label="recorded runs" style={{ marginBottom: 12, flexWrap: 'wrap' }}>
+          {results.map((r, i) => (
+            <button key={r.path} role="tab" aria-selected={r === latest} className={r === latest ? 'primary' : ''}
+              onClick={() => setSel(i)}>
+              {isLive(r.provider) ? `Live ${r.provider}` : 'Baseline'} · {r.created_at.slice(0, 10)} · {r.summary.runs}{' '}
+              runs
+            </button>
+          ))}
+        </div>
+      )}
       {!latest && <div className="panel empty">No recorded runs yet.</div>}
       {latest && (
         <div className="grid">
           <div className="panel">
             <h2>
-              {latest.provider} · {latest.created_at}
+              {isLive(latest.provider) ? `LIVE AI AGENT (${latest.provider})` : 'DETERMINISTIC BASELINE (no LLM)'} ·{' '}
+              {latest.created_at}
             </h2>
+            <p className="muted" style={{ marginTop: 0 }}>
+              {latest.path}
+              {latest.recorded ? ' · committed evidence (evidence/eval)' : ' · run on this server'}
+              {(latest.summary.infra_errors ?? 0) > 0 &&
+                ` · ${latest.summary.infra_errors} run(s) hit model-service errors and are excluded from the scores`}
+            </p>
             <div className="grid cards" style={{ marginBottom: 0 }}>
               {[
                 ['Runs', latest.summary.runs],
@@ -645,7 +714,8 @@ export function EvalLab() {
                       {r.variant} {r.heldout && <span className="badge">held-out</span>}
                     </td>
                     <td>
-                      <OutcomeBadge outcome={r.outcome} />
+                      {r.infra_error ? <span className="badge">infra error · not scored</span>
+                        : <OutcomeBadge outcome={r.outcome} />}
                     </td>
                     <td className="muted">{r.expected_outcome}</td>
                     <td>{r.correct_diagnosis ? '✓' : '✗'}</td>

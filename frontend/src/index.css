@@ -84,6 +84,16 @@ tr.click:hover td { background: var(--panel-2); cursor: pointer; }
 .mode-banner { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; border: 1px solid var(--border); }
 .mode-live { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
 .mode-det { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+.mode-err { background: var(--bad-soft); color: var(--bad); border-color: transparent; }
+.demo-banner { background: var(--info-soft); color: var(--info); padding: 8px 16px; font-size: 13px; border-bottom: 1px solid var(--border); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.demo-banner { margin: -24px -28px 20px; }
+.access { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.access input { width: auto; flex: 1; min-width: 160px; }
+.grid.featured { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.preset { display: flex; flex-direction: column; gap: 4px; text-align: left; font-weight: 400; padding: 12px; }
+.preset strong { font-weight: 650; }
+.preset.picked { border-color: var(--accent); background: var(--accent-soft); }
 
 button, .btn { font: inherit; border: 1px solid var(--border); background: var(--panel); color: var(--text); padding: 7px 14px; border-radius: 7px; cursor: pointer; font-weight: 550; }
 button:hover:not(:disabled) { background: var(--panel-2); }

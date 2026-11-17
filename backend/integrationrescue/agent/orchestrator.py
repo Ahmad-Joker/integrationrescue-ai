@@ -152,6 +152,8 @@ class _Run:
             try:
                 handlers[self.phase]()
             except ProviderError as exc:
+                # Recorded separately from the outcome so nobody mistakes an outage for an agent decision.
+                self.data["provider_error"] = {"kind": _error_kind(str(exc)), "message": str(exc)[:500]}
                 self.ev("PROVIDER_ERROR", str(exc))
                 self.goto("report", "ESCALATED" if self.data.get("diagnosis") is None else "DIAGNOSED")
             except Exception as exc:  # unexpected: never leave an incident in a half state
@@ -397,3 +399,13 @@ class _Run:
 def _short(args: dict[str, Any]) -> str:
     s = ", ".join(f"{k}={v!r}" for k, v in args.items())
     return s if len(s) < 120 else s[:117] + "..."
+
+
+def _error_kind(message: str) -> str:
+    """infrastructure: the model service was unreachable or out of quota; budget: our call cap stopped the agent;
+    model: the model answered but unusably (refusal, empty answer)."""
+    if message.startswith(("model quota exhausted", "model call failed", "GEMINI_API_KEY", "anthropic SDK")):
+        return "infrastructure"
+    if message.startswith("model call budget exhausted"):
+        return "budget"
+    return "model"

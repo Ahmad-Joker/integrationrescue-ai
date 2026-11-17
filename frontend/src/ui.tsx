@@ -40,6 +40,23 @@ export function ModeBanner({ mode, provider }: { mode: string; provider: string 
   )
 }
 
+const ERROR_TEXT: Record<string, string> = {
+  infrastructure: 'The live model service was unavailable (quota or network). This is an infrastructure failure, not an agent decision.',
+  budget: 'The agent hit its model-call budget before finishing.',
+  model: 'The model returned an unusable answer (for example a refusal).',
+}
+
+export function ProviderErrorBanner({ error }: { error: { kind: string; message: string } }) {
+  return (
+    <div className="mode-banner mode-err" role="alert">
+      <strong>MODEL UNAVAILABLE</strong>
+      <span>
+        {ERROR_TEXT[error.kind] ?? ERROR_TEXT.model} No repair was claimed. <span className="mono">{error.message}</span>
+      </span>
+    </div>
+  )
+}
+
 export function Diff({ text }: { text: string }) {
   return (
     <pre className="diff" aria-label="patch diff">

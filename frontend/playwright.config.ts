@@ -14,7 +14,8 @@ export default defineConfig({
     {
       command: `${python} -m uvicorn integrationrescue.api:app --app-dir ../backend --host 127.0.0.1 --port 8000`,
       url: 'http://127.0.0.1:8000/api/health',
-      env: { IR_VAR_DIR: varDir, IR_PROVIDER: 'deterministic' },
+      // IR_SKIP_DOTENV: browser tests must never pick up a developer's real model key from .env
+      env: { IR_VAR_DIR: varDir, IR_PROVIDER: 'deterministic', IR_SKIP_DOTENV: '1' },
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
     },

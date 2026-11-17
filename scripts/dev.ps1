@@ -9,8 +9,11 @@
   ./scripts/dev.ps1 test      # backend tests + lint + frontend build + browser tests
   ./scripts/dev.ps1 eval      # deterministic evaluation suite
   ./scripts/dev.ps1 reset     # delete synthetic runtime state under ./var
+  ./scripts/dev.ps1 judge-demo  # build dashboard + serve the public-demo mode on http://127.0.0.1:8080
+  ./scripts/dev.ps1 verify --url http://127.0.0.1:8080   # end-to-end check (needs $env:IR_ACCESS_TOKEN)
 #>
-param([Parameter(Position = 0)][string]$Command = "help")
+param([Parameter(Position = 0)][string]$Command = "help",
+      [Parameter(ValueFromRemainingArguments = $true)][string[]]$Rest)
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 $Py = Join-Path $Root ".venv\Scripts\python.exe"
@@ -36,6 +39,11 @@ switch ($Command) {
     Push-Location "$Root\frontend"; npx playwright test; Pop-Location
   }
   "eval" { Push-Location "$Root\backend"; & $Py -m integrationrescue.evaluation; Pop-Location }
+  "judge-demo" {
+    npm run build --prefix "$Root\frontend"
+    & $Py "$Root\scripts\serve_demo.py"
+  }
+  "verify" { & $Py "$Root\scripts\verify_deployment.py" @Rest }
   "reset" {
     $var = Join-Path $Root "var"
     if (Test-Path $var) { Remove-Item -Recurse -Force $var; Write-Host "Removed $var (synthetic data only)" }

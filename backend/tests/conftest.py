@@ -12,6 +12,7 @@ from integrationrescue.agent.store import Store
 def isolated_var(tmp_path, monkeypatch):
     monkeypatch.setenv("IR_VAR_DIR", str(tmp_path / "var"))
     monkeypatch.setenv("IR_PROVIDER", "deterministic")
+    monkeypatch.setenv("IR_EVIDENCE_DIR", str(tmp_path / "evidence"))
     return tmp_path / "var"
 
 

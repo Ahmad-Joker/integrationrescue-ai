@@ -7,12 +7,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import time
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from .agent.orchestrator import IncidentService
-from .paths import load_env_file, var_dir
+from .paths import PROJECT_ROOT, load_env_file, var_dir
 from .scenarios import REGISTRY
 from .simulators.world import World
 from .verification import verify
@@ -115,12 +117,19 @@ def run_suite(provider: str = "deterministic", seeds: list[int] | None = None, h
     return result
 
 
+def evidence_dir() -> Path:
+    """Committed, reproducible evaluation results (``evidence/eval``), shown even on a fresh deployment."""
+    return Path(os.environ.get("IR_EVIDENCE_DIR", PROJECT_ROOT / "evidence" / "eval"))
+
+
 def latest_results() -> list[dict[str, Any]]:
-    out = var_dir() / "eval"
-    if not out.exists():
-        return []
-    files = sorted(out.glob("eval_*.json"), reverse=True)[:20]
-    return [json.loads(p.read_text(encoding="utf-8")) | {"path": p.name} for p in files]
+    found: dict[str, Path] = {}
+    for folder in (evidence_dir(), var_dir() / "eval"):  # a local run of the same name wins
+        if folder.is_dir():
+            found.update({p.name: p for p in folder.glob("eval_*.json")})
+    files = sorted(found.values(), key=lambda p: p.name.split("_")[-2:], reverse=True)[:20]
+    return [json.loads(p.read_text(encoding="utf-8")) | {"path": p.name,
+                                                         "recorded": p.parent == evidence_dir()} for p in files]
 
 
 def main() -> None:

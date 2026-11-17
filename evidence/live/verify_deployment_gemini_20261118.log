@@ -1,0 +1,18 @@
+[PASS] health endpoint - HTTP 200
+       version=0.1.0 demo_mode=True live_providers={'claude': False, 'gemini': True} default=deterministic
+[PASS] health exposes no secrets
+[PASS] dashboard served - HTTP 200
+[PASS] state change without access code is refused
+[PASS] auto-approval refused (human gate cannot be skipped)
+[PASS] fictional incident created - {"id":"inc_7ddeca473e"}
+[PASS] agent ran with tools - 14 tool calls, mode=live provider=gemini
+[PASS] stopped at the human approval gate - phase=awaiting_approval outcome=PATCH_TESTED_NOT_VERIFIED
+[PASS] sandbox tests passed and regression test fails on unpatched code
+[PASS] human approval accepted - {"approved":true}
+[PASS] independent verification PASS
+[PASS] outcome VERIFIED - VERIFIED
+[PASS] exactly one charge and one grant despite duplicate delivery
+[PASS] ledger-outage incident created - {"id":"inc_feed982ca1"}
+[PASS] safe failure: INDETERMINATE, never VERIFIED - phase=done outcome=INDETERMINATE
+
+15/15 checks passed

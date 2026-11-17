@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| Base commit | `de04559c68973b37d808fb5ce8403afe0a7513d8` plus the uncommitted 2026-11-18 changes (this report describes the working tree that the proposed commits will contain) |
+| Base commit | `de04559c68973b37d808fb5ce8403afe0a7513d8` plus the 2026-11-18 changes, since committed as `24a58fe`…`7b04941` |
 | Machine | Windows 11 Home (10.0.26200), Git Bash + PowerShell 5.1 |
 | Python | 3.13.0 (project venv) · 3.12.16 in the container image (`python:3.12-slim`) |
 | Node / npm | 24.14.0 / 11.9.0 |
@@ -46,7 +46,8 @@
 - `ruff format --check` reports 31 files that would be reformatted. Formatting is not an enforced project check (only
   `ruff check`), so the code was not mass-reformatted, to keep the diff reviewable.
 - No Python type checker (mypy/pyright) is configured. Typing is enforced only by Pydantic at runtime.
-- **CI has not run on these changes** (not pushed). The last green CI run is for `de04559` (run 41254875454).
+- CI on GitHub: run 44201180724 for `7b04941` passed all three jobs, including the container job that builds the image and
+  runs `verify_deployment.py` inside it.
 - The container was tested on Docker Desktop (Linux VM), not on the hosting platform. No public deployment exists.
 - One live end-to-end run is a demonstration, not a reliability measurement.
 - Local helper packages installed in the venv only (not project dependencies): `pyyaml` (validating workflow YAML)

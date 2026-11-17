@@ -16,7 +16,7 @@ Results of the release gate run in this session. Details and exact commands: [do
 | 10 | Two-minute script fits | ✅ 218 words ≈ 1:33 at 140 wpm (`scripts/script_timing.py`) |
 | 11 | Six-minute script fits | ✅ 2:00 demo + 451 words ≈ 3:13 at 140 wpm |
 | 12 | `git diff` inspected | ✅ changes limited to the features and docs listed in the session report |
-| 13 | `git status` inspected | ✅ nothing deleted; no history rewritten; nothing committed or pushed (awaiting founder OK) |
+| 13 | `git status` inspected | ✅ nothing deleted; no history rewritten; committed and pushed after founder OK; run 44201180724 green |
 | 14 | This checklist | ✅ |
 | 15 | SUBMISSION_READINESS final status | ✅ updated |
 

@@ -11,7 +11,8 @@ ready but not deployed. Business validation has not started.
   `scripts/verify_deployment.py` 15/15 (deterministic).
 - Live Gemini end-to-end on the local demo server: 15/15, VERIFIED ([evidence/live](../evidence/live/README.md)).
 - CI: the last pushed commit (`de04559`) was green on GitHub (run 41254875454, 2026-11-01). **The changes from
-  2026-11-18 are not yet pushed, so they have no CI run.**
+  2026-11-18 are not yet pushed, so they have no CI run.** Update: pushed as `7b04941`; run 44201180724 green on all three
+  jobs (backend, frontend, container).
 
 ## Implemented
 Simulators (billing, entitlements, webhooks, logs) · sync service running customer code in limited child processes ·

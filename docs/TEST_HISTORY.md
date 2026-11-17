@@ -38,4 +38,4 @@
   ambiguous locator; CI npm-audit would fail on a new unfixable build-tool advisory.
 - Container: built locally, refuses to start without an access code, `verify_deployment.py` 15/15.
 - Live Gemini end-to-end on the local demo server: 15/15, VERIFIED (`evidence/live/`).
-- GitHub Actions: not yet run on these changes (awaiting push approval).
+- GitHub Actions: run 44201180724 on `7b04941` green (backend, frontend, container: image build + judge-flow check).

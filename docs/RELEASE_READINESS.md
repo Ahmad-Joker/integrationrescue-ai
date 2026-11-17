@@ -14,8 +14,8 @@
 | 18 | Complete demo succeeds | ✅ live Gemini and baseline, local; ❌ no public URL |
 | 19 | Metrics from actual runs | ✅ committed in `evidence/` |
 | 20 | Documentation accurate | ✅ as of 2026-11-18 |
-| 21 | Repo clean and reproducible | 🟡 uncommitted 2026-11-18 changes awaiting founder OK |
-| 22 | CI verified | ✅ for `de04559`; ⏳ the new commit needs a run after push |
+| 21 | Repo clean and reproducible | ✅ committed and pushed (`7b04941`) |
+| 22 | CI verified | ✅ `7b04941`: run 44201180724, backend + frontend + container jobs green |
 | 23 | Multimodal | ❌ not started |
 | 24 | Live vs baseline clearly labelled | ✅ UI, reports, evals, docs |
 | 25 | Competition materials | 🟡 written; recordings, deck design, validation evidence are founder actions |

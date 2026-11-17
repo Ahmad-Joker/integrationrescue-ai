@@ -7,28 +7,23 @@ its returned actions are validated before being applied to Entitlements.
 from __future__ import annotations
 
 import json
-import os
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
+from ..security.child import child_env, limited
 from .world import PLAN_FEATURES, Subscriber, World
 
 RUNNER = Path(__file__).resolve().parent / "runner.py"
 HANDLER_TIMEOUT_S = 15
 
 
-def _child_env() -> dict[str, str]:
-    keep = {"SYSTEMROOT", "SYSTEMDRIVE", "WINDIR", "TEMP", "TMP", "PATH"}
-    return {k: v for k, v in os.environ.items() if k.upper() in keep}
-
-
 def run_handler(repo_dir: Path, event: dict[str, Any], tenant: str) -> dict[str, Any]:
     proc = subprocess.run(
-        [sys.executable, "-I", str(RUNNER), str(repo_dir), tenant],
+        limited([sys.executable, "-I", str(RUNNER), str(repo_dir), tenant], cpu_s=HANDLER_TIMEOUT_S),
         input=json.dumps(event), capture_output=True, text=True,
-        timeout=HANDLER_TIMEOUT_S, env=_child_env(), cwd=str(repo_dir),
+        timeout=HANDLER_TIMEOUT_S, env=child_env(), cwd=str(repo_dir),
     )
     if proc.returncode != 0:
         return {"error": f"runner exited {proc.returncode}", "stderr": proc.stderr[-2000:]}

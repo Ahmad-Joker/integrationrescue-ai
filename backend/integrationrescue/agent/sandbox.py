@@ -5,13 +5,13 @@ from __future__ import annotations
 import difflib
 import importlib.util
 import json
-import os
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
+from ..security.child import child_env, limited
 from ..security.policy import PolicyViolation, safe_relpath
 from ..simulators.sync_service import make_subscriber
 from ..simulators.world import World
@@ -58,12 +58,11 @@ def test_runner_available() -> bool:
 
 
 def run_tests(repo: Path, test_paths: list[str] | None = None) -> dict[str, Any]:
-    env = {k: v for k, v in os.environ.items()
-           if k.upper() in {"SYSTEMROOT", "SYSTEMDRIVE", "WINDIR", "TEMP", "TMP", "PATH"}}
-    cmd = [sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", *(test_paths or ["tests"])]
+    cmd = limited([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", *(test_paths or ["tests"])],
+                  cpu_s=TEST_TIMEOUT_S)
     try:
         proc = subprocess.run(cmd, cwd=str(repo), capture_output=True, text=True,
-                              timeout=TEST_TIMEOUT_S, env=env)
+                              timeout=TEST_TIMEOUT_S, env=child_env())
     except subprocess.TimeoutExpired:
         return {"passed": False, "returncode": None, "output": "test run timed out"}
     out = (proc.stdout + proc.stderr)[-4000:]

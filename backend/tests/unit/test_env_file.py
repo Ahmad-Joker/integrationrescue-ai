@@ -3,7 +3,7 @@ import subprocess
 import sys
 
 from integrationrescue.paths import load_env_file
-from integrationrescue.simulators.sync_service import _child_env
+from integrationrescue.security.child import child_env as _child_env
 
 
 def test_env_file_loads_without_overriding(tmp_path, monkeypatch):

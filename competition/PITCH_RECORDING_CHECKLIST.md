@@ -11,11 +11,14 @@
 **Content check (before recording)**
 - [ ] Every number on the slides appears in TECHNICAL_EVIDENCE.md, with live and baseline kept separate
 - [ ] ⚠ lines in PITCH_SCRIPT_6_MIN.md: real evidence inserted, or the fallback sentence used
-- [ ] No mention of customers, pilots, revenue or market size without evidence
+- [ ] No mention of customers, pilots, revenue or market size without evidence; the ask is for design partners
+- [ ] Location said correctly: based in Egypt; Egypt and UK first; UAE as a championship-enabled expansion market
+- [ ] Founder line says: Ahmad Essam Abdelaziz, AI student at AAST, AI-agent developer
+- [ ] 🔗 judge-access line only if a public URL passed `verify_deployment.py`; otherwise skip it and remove the URL from slide 15
 - [ ] Limitations sentence included (simulated systems, fictional data, prototype)
 
 **Recording**
-- [ ] Three timed rehearsals; final take 5:45–6:00, hard maximum 6:00
+- [ ] Three timed rehearsals; final take 5:40–5:55, hard maximum 6:00 (see PITCH_TIMING.md for what to cut)
 - [ ] Speak to the lens, not the screen; pause after each number
 - [ ] English narration; record the presentation in one or two takes, not sentence by sentence
 

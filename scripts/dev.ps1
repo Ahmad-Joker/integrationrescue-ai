@@ -11,6 +11,8 @@
   ./scripts/dev.ps1 reset     # delete synthetic runtime state under ./var
   ./scripts/dev.ps1 judge-demo  # build dashboard + serve the public-demo mode on http://127.0.0.1:8080
   ./scripts/dev.ps1 verify --url http://127.0.0.1:8080   # end-to-end check (needs $env:IR_ACCESS_TOKEN)
+  ./scripts/dev.ps1 record      # fresh live-Gemini judge demo for recording the 2-minute video
+  ./scripts/dev.ps1 preflight   # every check to run before deploying (tests, build, container)
 #>
 param([Parameter(Position = 0)][string]$Command = "help",
       [Parameter(ValueFromRemainingArguments = $true)][string[]]$Rest)
@@ -44,6 +46,8 @@ switch ($Command) {
     & $Py "$Root\scripts\serve_demo.py"
   }
   "verify" { & $Py "$Root\scripts\verify_deployment.py" @Rest }
+  "record" { & "$Root\scripts\record_demo.ps1" }
+  "preflight" { & "$Root\scripts\deploy_preflight.ps1" }
   "reset" {
     $var = Join-Path $Root "var"
     if (Test-Path $var) { Remove-Item -Recurse -Force $var; Write-Host "Removed $var (synthetic data only)" }

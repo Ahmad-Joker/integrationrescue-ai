@@ -9,14 +9,14 @@ Tick every line before recording or presenting. Details: [docs/LIVE_DEMO_RUNBOOK
 - [ ] CI green on the commit being shown (GitHub Actions page)
 
 **Ten minutes before**
-- [ ] State reset (delete `var\demo` or `POST /api/admin/reset`)
+- [ ] Fresh state: `./scripts/dev.ps1 record` (local; recreates `var/recording`) or `POST /api/admin/reset` (deployed)
 - [ ] Dashboard opens; the purple "simulated and fictional" banner is visible
 - [ ] Access code entered and accepted (deployed) or printed codes noted (local)
 - [ ] New incident → "Paid for Pro, still on Free" selected → Decision maker shows **Live AI agent (Gemini)**
 - [ ] Notifications off, browser zoom 110%, mouse cursor visible, terminal windows hidden
 
 **During**
-- [ ] Mode banner says **LIVE AI AGENT** before you talk about AI
+- [ ] Mode banner says **LIVE AI AGENT … (gemini)** before you talk about AI; say "a real Gemini-powered run", not "not a script"
 - [ ] Pause on the hypotheses, the diff, the regression test FAIL-before, and the approval click
 - [ ] You click **Approve & promote** yourself (on camera)
 - [ ] Verification tab shows each check with expected vs observed

@@ -7,8 +7,10 @@ IntegrationRescue investigates incidents like this with real tools against runni
 isolated copy, tests a minimal repair, waits for a human to approve it, and only reports **VERIFIED** when an independent
 verifier confirms the business state (correct plan, exactly one charge, exactly one grant).
 
-> **Status:** competition prototype for the Create AI Agents Championship (Best Business AI Agent). All services are
-> simulated and all data is fictional. No customers, pilots or deployment yet. See [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
+> **Status:** competition prototype for the Create AI Agents Championship (Best Business AI Agent), built by Ahmad
+> Essam Abdelaziz (BSc Artificial Intelligence student, AAST; based in Egypt). All services are simulated and all data is
+> fictional. No customers, pilots or deployment yet. Submission window: 4 December 2026 – 4 January 2027.
+> See [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## Competition submission
 | | |
@@ -18,8 +20,10 @@ verifier confirms the business state (correct plan, exactly one charge, exactly 
 | Evidence | [competition/TECHNICAL_EVIDENCE.md](competition/TECHNICAL_EVIDENCE.md) · raw results [evidence/](evidence/) · tests [docs/VERIFICATION_REPORT.md](docs/VERIFICATION_REPORT.md) |
 | Safety and oversight | [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) · [docs/LIMITATIONS.md](docs/LIMITATIONS.md) |
 | Live demo | [docs/LIVE_DEMO_RUNBOOK.md](docs/LIVE_DEMO_RUNBOOK.md) · [competition/DEMO_SCRIPT_2_MIN.md](competition/DEMO_SCRIPT_2_MIN.md) |
-| Pitch | [competition/PITCH_SCRIPT_6_MIN.md](competition/PITCH_SCRIPT_6_MIN.md) · [competition/PITCH_DECK.md](competition/PITCH_DECK.md) · [competition/BUSINESS_MODEL_CANVAS.md](competition/BUSINESS_MODEL_CANVAS.md) |
-| Readiness | [competition/SUBMISSION_READINESS.md](competition/SUBMISSION_READINESS.md) · founder actions [competition/USER_ACTIONS.md](competition/USER_ACTIONS.md) |
+| Pitch | [competition/PITCH_SCRIPT_6_MIN.md](competition/PITCH_SCRIPT_6_MIN.md) · deck (final-design candidate awaiting founder assets): [competition/IntegrationRescue_Competition_Deck.pptx](competition/IntegrationRescue_Competition_Deck.pptx), [spec](competition/PITCH_DECK.md), [QA](competition/DECK_QA.md) · [competition/BUSINESS_MODEL_CANVAS.md](competition/BUSINESS_MODEL_CANVAS.md) |
+| Validation | plan and interview kit: [competition/PROBLEM_VALIDATION_PLAN.md](competition/PROBLEM_VALIDATION_PLAN.md). **No interviews completed yet** |
+| CI | latest green run: [44201542793](https://github.com/Ahmad-Joker/integrationrescue-ai/actions/runs/44201542793) on `a3ffbcd` (backend, frontend, container) |
+| Readiness | [competition/SUBMISSION_READINESS.md](competition/SUBMISSION_READINESS.md) · founder actions [competition/USER_ACTIONS.md](competition/USER_ACTIONS.md) · placeholders [competition/PLACEHOLDER_REGISTER.md](competition/PLACEHOLDER_REGISTER.md) |
 
 ## What the evidence shows (recorded, reproducible)
 - **Live Gemini agent** (`gemini-3.1-flash-lite`, free tier) diagnosed 31/31 scored incidents correctly across 3

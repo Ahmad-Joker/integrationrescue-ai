@@ -29,17 +29,20 @@ Platform fee per company per year          F   = <pricing test result>          
 
 Annual revenue potential (beachhead) ≈ N × p × (f × P + F)
 ```
-Do the calculation separately for the UAE/GCC (founder's home market and pilot base) and global English-speaking SaaS.
-Present it only with the inputs visible.
+Do the calculation separately for Egypt (founder base), the UK (founder-access market), the UAE (competition-led
+expansion) and global English-speaking SaaS. Present it only with the inputs visible.
 
-## UAE / MENA angle (qualitative, to verify)
-- The founder is based in the UAE, and the championship is run by the Dubai Chamber of Digital Economy, so pilots and
-  first customers can be local, in person, and in the same time zone.
-- Regional SaaS companies increasingly bill through global platforms (Stripe and others) and through local payment
-  providers. Connector priorities should follow what interviews show, not assumptions.
+## Regional angle (qualitative, to verify)
+- **Founder base:** Ahmad is based in Egypt. Egyptian SaaS and software teams are the most reachable first interviewees
+  (in person, same time zone, university and startup communities).
+- **UK:** Ahmad also holds British citizenship, so UK teams are reachable remotely and UK pilots are practical.
+- **UAE:** a proposed early market through the Create AI Agents Championship network (Dubai Chamber of Digital
+  Economy), subject to customer validation. There is no existing UAE network or customer.
+- Which billing platforms these companies use (global platforms such as Stripe, or local payment providers) is an
+  interview question, not an assumption. Connector priorities follow the answers.
 - Data residency and approval requirements in regulated sectors favour our design: read-only access, human approval
   and an auditable, independent verifier. This also points to an on-prem/VPC verifier option.
-- **To do:** cite official UAE digital-economy or SaaS statistics only with source, date and URL.
+- **To do:** cite official Egyptian, UK or UAE digital-economy or SaaS statistics only with source, date and URL.
 
 ## Global opportunity (qualitative)
 The workflow does not depend on the region: connectors are per platform, not per country. A global path runs through

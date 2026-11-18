@@ -5,7 +5,7 @@ Founder-only actions (accounts, recordings, interviews, submission) are tracked 
 
 | # | Task | Importance | Files | Depends on | Done when | Status |
 |---|---|---|---|---|---|---|
-| 1 | Push the 2026-11-18 changes; confirm all three CI jobs are green | P0 | .github/workflows/ci.yml | founder OK to push | run green on GitHub | done (`7b04941`, run 44201180724, all 3 jobs green) |
+| 1 | Push the 2026-11-18 changes; confirm all three CI jobs are green | P0 | .github/workflows/ci.yml | founder OK to push | run green on GitHub | done (`a3ffbcd`, run 44201542793, all 3 jobs green); next push needs founder OK |
 | 2 | Deploy the container and verify the public URL (deterministic + live) | P0 | Dockerfile, render.yaml, scripts/verify_deployment.py | hosting account (founder) | two 15/15 runs against the URL recorded in JUDGE_ACCESS | ready, blocked on account |
 | 3 | Record the 2-minute live demo and the 6-minute pitch | P0 | competition/DEMO_*, PITCH_* | #2 or local demo | videos uploaded unlisted | founder |
 | 4 | Customer discovery: 8–10 interviews, fill VALIDATION_EVIDENCE | P0 (business) | competition/PROBLEM_VALIDATION_PLAN.md | founder | evidence file filled with real notes | todo |
@@ -15,4 +15,4 @@ Founder-only actions (accounts, recordings, interviews, submission) are tracked 
 | 8 | Per-run OS isolation for customer code (gVisor/Firecracker/container per run) | P1 | security/child.py, agent/sandbox.py | hosting that allows it | filesystem + network isolation tested | rlimits done; isolation todo |
 | 9 | Screenshot analysis via a vision model, cross-checked with API state | P3 | agent/, api.py | #6 | text-only vs multimodal comparison recorded | todo |
 | 10 | Playwright "customer app" page + browser tool restricted to the local origin | P3 | simulators/, agent/tools.py | — | agent reproduces the "Upgrade to Pro" banner | todo |
-| 11 | Confirm the official rules: exact deadline day, video lengths, required documents | P0 (business) | competition/SUBMISSION_READINESS.md | founder (portal access) | portal text cited | public page read 2026-11-18: "January 2027", no day |
+| 11 | Confirm the official rules: exact deadline day, video lengths, required documents | P0 (business) | competition/SUBMISSION_READINESS.md | founder (portal access) | portal text cited | dates known: portal 4 Dec 2026, deadline 4 Jan 2027; check field formats when the portal opens |

@@ -11,7 +11,7 @@ names in this public repo; keep identifying notes privately). Summarise all inte
 | Channel (call / in person) | |
 | Role | e.g. head of engineering |
 | Company size band | 1–20 / 21–100 / 101–300 / 300+ |
-| Region | UAE / GCC / Europe / North America / other |
+| Region | Egypt / UK / UAE / other GCC / Europe / North America / other |
 | Billing platform / entitlement approach | |
 | Recording or quote permission | yes / no |
 

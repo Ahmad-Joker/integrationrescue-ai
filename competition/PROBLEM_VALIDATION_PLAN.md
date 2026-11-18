@@ -23,8 +23,11 @@ submission. Evidence goes into [VALIDATION_EVIDENCE_TEMPLATE.md](VALIDATION_EVID
   AI coding tools (lower trust barrier).
 
 ## Interviews (target: 10 in 3 weeks)
-- Sources: founder's network, UAE startup communities (incubators, coworking spaces, meetups), SaaS founders on
-  LinkedIn, billing-platform community forums, integration agencies. **Do not pay for leads** (no budget).
+- Sources, in order: Egypt (AAST and university networks, Egyptian SaaS teams, Cairo/Alexandria meetups and startup
+  communities), the UK (remote outreach to SaaS teams; Ahmad holds British citizenship), the UAE only through
+  championship or startup-programme introductions, then remote/global (LinkedIn, billing-platform community forums,
+  integration agencies). **Do not pay for leads** (no budget). Targets: [INTERVIEW_TARGET_PROFILE.md](INTERVIEW_TARGET_PROFILE.md);
+  messages: [INTERVIEW_OUTREACH_MESSAGES.md](INTERVIEW_OUTREACH_MESSAGES.md); tracker: `INTERVIEW_TRACKER_TEMPLATE.csv`.
 - Script: [CUSTOMER_INTERVIEW_SCRIPT.md](CUSTOMER_INTERVIEW_SCRIPT.md). Ask about past behaviour, not opinions of the
   product. Show the demo only in the last 10 minutes.
 - Record: role, company size (band), stack, last incident (what, how found, time to fix, who), current tools,

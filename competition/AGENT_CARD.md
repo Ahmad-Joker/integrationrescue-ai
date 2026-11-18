@@ -8,7 +8,7 @@
 | **Target user** | Integration, support or platform engineers at B2B SaaS companies that connect billing to product access. The buyer would be the head of engineering, support or revenue operations (hypothesis, unvalidated). |
 | **Problem** | A transaction "succeeds" in every system (card charged, webhook 202) while the business action silently fails. Engineers trace it by hand across billing, webhooks, sync code and entitlement data. |
 | **Deployment mode** | Single container with simulated services and fictional data. Not deployed yet (see `docs/JUDGE_ACCESS.md`). Local and CI runs only so far. |
-| **Owner / contact** | Ahmad (founder) · `<email to be added>` · repository: github.com/Ahmad-Joker/integrationrescue-ai |
+| **Owner / contact** | Ahmad Essam Abdelaziz (founder; BSc Artificial Intelligence student, AAST; based in Egypt) · [PLACEHOLDER: founder email] · repository: github.com/Ahmad-Joker/integrationrescue-ai |
 
 ## Inputs
 Support ticket text and optional uploads (logs, JSON, screenshots), all treated as **untrusted data**. Read-only

@@ -9,8 +9,8 @@ Official page https://dubaichamberdigital.com/en/create-ai-agents (read 2026-11-
 Youth AI Agent (under 21); registration and submission of "Agent & Pitch Deck" in "January 2027" (no day given);
 submission = prototype, pitch deck and demo video; English only; agent must not be copied from an existing repository;
 finalists present a working agent on stage; Grand Final first week of May 2027. The 6-minute pitch video, Business
-Model Canvas, Agent Card and judging weights come from the founder's brief and are to be confirmed in the portal.
-Internal readiness target: 2026-12-15.
+Model Canvas, Agent Card and judging weights come from the founder's brief. Founder-provided dates (2026-11-18):
+submission portal opens 4 December 2026; deadline 4 January 2027. Internal readiness target: 2026-12-15.
 
 ## Requirements and status
 | # | Requirement | Status |

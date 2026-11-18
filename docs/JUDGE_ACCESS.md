@@ -1,15 +1,15 @@
 # Judge access
 
 > **Public URL: not yet deployed.** The founder fills this in after deployment and a passing
-> `scripts/verify_deployment.py` run ([USER_ACTIONS.md](../competition/USER_ACTIONS.md) A1–A3).
+> `scripts/verify_deployment.py` run ([USER_ACTIONS.md](../competition/USER_ACTIONS.md) A4–A5).
 
 | | |
 |---|---|
-| URL | `<to be added after deployment>` |
+| URL | [PLACEHOLDER: public demo URL] (only after `verify_deployment.py` passes against it) |
 | Access code | sent privately with the submission (never in this public repository) |
 | Data | every customer, payment, webhook and log is simulated and fictional |
-| Availability | `<host, plan, and whether the free tier sleeps: first load may take about a minute>` |
-| Contact if it is down | `<founder email>` |
+| Availability | [PLACEHOLDER: host and plan]. On the free Render plan the service sleeps when idle, so the first load can take about a minute |
+| Contact if it is down | [PLACEHOLDER: founder email] |
 
 ## Five-minute tour
 1. Open the URL. The purple banner confirms that this is a simulation. Enter the access code and press **Unlock**.

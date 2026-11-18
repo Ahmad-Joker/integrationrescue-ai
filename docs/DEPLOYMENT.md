@@ -2,7 +2,7 @@
 
 **Status: deployment-ready, not deployed.** No public URL exists yet. The container image was built and verified
 locally on 2026-11-18 (see [VERIFICATION_REPORT.md](VERIFICATION_REPORT.md)). Deploying needs a hosting account,
-which only the founder can create ([competition/USER_ACTIONS.md](../competition/USER_ACTIONS.md) A1–A3).
+which only the founder can create ([competition/USER_ACTIONS.md](../competition/USER_ACTIONS.md) A4–A5).
 
 ## Shape
 One container (`Dockerfile`) runs FastAPI, the simulated services and the built dashboard on one port. State is

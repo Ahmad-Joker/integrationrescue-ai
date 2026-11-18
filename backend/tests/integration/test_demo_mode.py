@@ -31,12 +31,15 @@ def demo(svc, monkeypatch, tmp_path):
 
 def _wait(client, iid, phases=("done", "awaiting_approval"), timeout=120):
     end = time.time() + timeout
+    inc: dict = {}
     while time.time() < end:
         inc = client.get(f"/api/incidents/{iid}").json()
         if inc["phase"] in phases and not inc["running"]:
             return inc
         time.sleep(0.3)
-    raise AssertionError("incident did not settle")
+    last = [e["summary"] for e in inc.get("timeline", [])[-3:]]
+    raise AssertionError(f"incident did not settle: phase={inc.get('phase')} running={inc.get('running')} "
+                         f"outcome={inc.get('outcome')} last events={last}")
 
 
 def test_state_changes_need_the_access_code(demo):
@@ -56,10 +59,12 @@ def test_judge_flow_requires_human_approval(demo):
     assert demo.post("/api/incidents", json={"auto_approve": True}, headers=h).status_code == 403
     iid = demo.post("/api/incidents", json={"variant": "case_mismatch", "seed": 11}, headers=h).json()["id"]
     inc = _wait(demo, iid)
-    assert inc["phase"] == "awaiting_approval" and inc["approval"] is None
+    assert inc["phase"] == "awaiting_approval" and inc["approval"] is None, (inc["phase"], inc["outcome"])
     assert demo.post(f"/api/incidents/{iid}/approve", json={"approver": "judge"}).status_code == 401
-    assert demo.post(f"/api/incidents/{iid}/approve", json={"approver": "judge"}, headers=h).status_code == 200
-    assert _wait(demo, iid, ("done",))["outcome"] == "VERIFIED"
+    ok = demo.post(f"/api/incidents/{iid}/approve", json={"approver": "judge"}, headers=h)
+    assert ok.status_code == 200, ok.text
+    done = _wait(demo, iid, ("done",))
+    assert done["outcome"] == "VERIFIED", (done["outcome"], done.get("provider_error"), done["verification"])
     assert demo.post("/api/eval/run", json={}, headers=h).status_code == 403
 
 

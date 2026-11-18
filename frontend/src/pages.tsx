@@ -718,7 +718,7 @@ export function EvalLab() {
                         : <OutcomeBadge outcome={r.outcome} />}
                     </td>
                     <td className="muted">{r.expected_outcome}</td>
-                    <td>{r.correct_diagnosis ? '✓' : '✗'}</td>
+                    <td>{r.infra_error ? '—' : r.correct_diagnosis ? '✓' : '✗'}</td>
                     <td className="hide-sm">{r.tool_calls}</td>
                     <td className="hide-sm">{r.duration_s}</td>
                   </tr>

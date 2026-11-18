@@ -1,24 +1,23 @@
-# Final release checklist (2026-11-18)
+# Final release checklist (2026-11-18, second pass)
 
-Results of the release gate run in this session. Details and exact commands: [docs/VERIFICATION_REPORT.md](../docs/VERIFICATION_REPORT.md).
+Details and exact commands: [docs/VERIFICATION_REPORT.md](../docs/VERIFICATION_REPORT.md).
 
 | # | Gate | Result |
 |---|---|---|
-| 1 | All relevant automated checks re-run | ✅ backend (Windows + Linux), frontend lint/build, Playwright, audits, container |
-| 2 | Frontend production build | ✅ `tsc -b && vite build` |
-| 3 | Backend tests | ✅ Windows: 117 passed, 2 skipped (POSIX-only) · Linux (container image): 119 passed, 0 skipped |
-| 4 | Lint and type checks | ✅ ruff (backend + scripts), oxlint, TypeScript via `tsc -b`. No Python type checker is configured in this repo |
-| 5 | Security and prompt-injection tests | ✅ `tests/adversarial`, `test_policy.py`, `test_edit_schema.py`, `test_demo_mode.py`, `test_provider_failures.py`, `test_child_limits.py` |
-| 6 | Demonstration path locally | ✅ `verify_deployment.py` 15/15: local demo server (baseline), container (baseline), local demo server (live Gemini) |
-| 7 | No secrets committed | ✅ scan of all tracked and new files for API-key patterns, the session's throwaway codes, personal email and local paths; `.env` ignored and excluded from the Docker context. Note: `.claude/launch.json` (already tracked) contains a local path; it is left out of the commit plan (USER_ACTIONS B5) |
-| 8 | Internal links work | ✅ `python scripts/check_links.py` (45+ Markdown files, 0 broken) |
-| 9 | No unsupported claims | ✅ figures cross-checked against `evidence/` via `scripts/summarize_evidence.py`; no market numbers, customers, pilots or testimonials; hypotheses labelled |
-| 10 | Two-minute script fits | ✅ 218 words ≈ 1:33 at 140 wpm (`scripts/script_timing.py`) |
-| 11 | Six-minute script fits | ✅ 2:00 demo + 451 words ≈ 3:13 at 140 wpm |
-| 12 | `git diff` inspected | ✅ changes limited to the features and docs listed in the session report |
-| 13 | `git status` inspected | ✅ nothing deleted; no history rewritten; committed and pushed after founder OK; run 44201180724 green |
-| 14 | This checklist | ✅ |
-| 15 | SUBMISSION_READINESS final status | ✅ updated |
+| 1 | Backend: ruff, full tests, security and prompt-injection tests, dependency audit, eval smoke | ✅ ruff clean; Windows 117 passed + 2 POSIX-only skips; Linux 119 passed; pip-audit clean; eval smoke 0 false VERIFIED, 0 duplicate charges |
+| 2 | Frontend: lint, TypeScript, production build, audit, Playwright | ✅ oxlint, `tsc -b && vite build`, shipped deps 0 vulnerabilities, Playwright 3/3 |
+| 3 | Container: build, refusal without access code, judge demo, 15 checks, human approval required, failures never VERIFIED | ✅ `./scripts/dev.ps1 preflight` PASSED (15/15 includes auto-approval refused, the approval gate, and a ledger outage giving INDETERMINATE) |
+| 4 | Flaky test | ⚠ one unreproduced failure in preflight run 2; diagnostics added, test not weakened (VERIFICATION_REPORT) |
+| 5 | Internal links | ✅ 54 files, 0 broken |
+| 6 | Evidence summarizer | ✅ figures unchanged |
+| 7 | Script timing | ✅ demo 1:41 at 140 wpm (< 2:00); full pitch 5:39 at 140 wpm, 5:56 at 130 (< 6:00) |
+| 8 | False UAE-location claims | ✅ none: "based in the UAE", "UAE-first", "here in the UAE", "local UAE network" do not occur |
+| 9 | Stale CI references | ✅ current: `a3ffbcd`, run 44201542793 (historical entries in TEST_HISTORY and DECISION_LOG are left as history) |
+| 10 | Unsupported claims | ✅ no customers, pilots, interviews, revenue, market numbers or validated prices; hypotheses labelled; comparison "not yet run" |
+| 11 | Secrets and local paths | ✅ changed files, screenshots and the .pptx scanned: no keys, codes or personal email; the only local path is in `.claude/launch.json` (pre-existing, left out of the commit plan; USER_ACTIONS B4) |
+| 12 | Deck renders inspected | ✅ all 15 slides, three rounds (DECK_QA.md) |
+| 13 | Generated assets size | ✅ screenshots 1.9 MB, deck previews 1.1 MB, .pptx about 0.7 MB; no caches or build output staged |
+| 14 | `git diff` / `git status` inspected | ✅ no deletions, no history rewrite; nothing committed or pushed (awaiting founder OK) |
+| 15 | SUBMISSION_READINESS and USER_ACTIONS updated | ✅ |
 
-Not covered by this gate: a CI run on the new commit (needs the push), a public deployment, the recordings, customer
-evidence.
+**Not ready for submission:** deployment, the two recordings, the contact email and real interviews are founder actions.

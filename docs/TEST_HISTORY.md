@@ -39,3 +39,11 @@
 - Container: built locally, refuses to start without an access code, `verify_deployment.py` 15/15.
 - Live Gemini end-to-end on the local demo server: 15/15, VERIFIED (`evidence/live/`).
 - GitHub Actions: run 44201180724 on `7b04941` green (backend, frontend, container: image build + judge-flow check).
+
+## 2026-11-18 — second pass (deck, pitch, validation kit)
+- Backend: Windows 117 passed + 2 POSIX skips; Linux (image) 119 passed; ruff clean. Playwright 3 passed.
+- New `./scripts/dev.ps1 preflight`: passed on its third run. Run 1 stopped on a PowerShell 5.1 script bug (native
+  stderr treated as terminating); run 2 had one unreproduced failure of `test_judge_flow_requires_human_approval`
+  (4 later runs passed; diagnostics added, test not weakened).
+- Live Gemini screenshot run `inc_2376f4f829`: VERIFIED, 13 model calls.
+- UI fix: the Evaluation lab no longer shows a diagnosis ✓ for runs excluded as infrastructure errors.

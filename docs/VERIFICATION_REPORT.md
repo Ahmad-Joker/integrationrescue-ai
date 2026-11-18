@@ -1,54 +1,50 @@
-# Verification report: 2026-11-18
+# Verification report: 2026-11-18 (second pass)
 
 | | |
 |---|---|
-| Base commit | `de04559c68973b37d808fb5ce8403afe0a7513d8` plus the 2026-11-18 changes, since committed as `24a58fe`…`7b04941` |
-| Machine | Windows 11 Home (10.0.26200), Git Bash + PowerShell 5.1 |
-| Python | 3.13.0 (project venv) · 3.12.16 in the container image (`python:3.12-slim`) |
+| Base commit | `a3ffbcdba0db4a58ee4e0b870270b2e066b8d1a9` (CI run [44201542793](https://github.com/Ahmad-Joker/integrationrescue-ai/actions/runs/44201542793): backend, frontend, container all successful) plus this session's uncommitted changes (deck, pitch, validation kit, scripts, one test-diagnostics change, one UI fix) |
+| Machine | Windows 11 Home (10.0.26200), Git Bash + PowerShell 5.1, Docker Desktop 29.9.2 |
+| Python | 3.13.0 (venv) · 3.12.16 in the container image |
 | Node / npm | 24.14.0 / 11.9.0 |
-| Tools | ruff 0.17.3 · pytest (runtime dependency) · oxlint · TypeScript 7 via `tsc -b` · Playwright 1.64.1 (Chromium) · pip-audit 2.10.1 · Docker 29.9.2 |
-| Live-provider tests | **one** live Gemini end-to-end run (`gemini-3.1-flash-lite`, free tier, `verify_deployment.py --provider gemini`); no Claude calls. CI never calls a model |
+| Tools | ruff 0.17.3 · pytest · oxlint · TypeScript via `tsc -b` · Playwright 1.64.1 · pip-audit 2.10.1 · python-pptx 1.0.2 (dev only) · PowerPoint (slide rendering) |
+| Live-provider calls this pass | **one** live Gemini incident (`inc_2376f4f829`, gemini-3.1-flash-lite, free tier, 13 calls) to capture the deck screenshots. No Claude calls. CI never calls a model |
 
 ## Results
-| # | Command (from repo root unless noted) | Result |
+| # | Command (repo root unless noted) | Result |
 |---|---|---|
-| 1 | `cd backend; ..\.venv\Scripts\ruff check .` and `ruff check scripts --config backend/pyproject.toml` | pass |
-| 2 | `cd backend; ..\.venv\Scripts\python -m pytest -o addopts="-p no:cacheprovider" -q -rs` (Windows) | **117 passed, 2 skipped** in 254 s. The skips are the POSIX-only resource-limit tests |
-| 3 | Same suite on Linux inside the image: `docker run --rm -v <repo>/backend:/src:ro -w /src integrationrescue:local python -m pytest ...` | **119 passed, 0 skipped** in 273 s (Python 3.12.16), including the POSIX resource-limit tests |
-| 4 | `npm run lint --prefix frontend` (oxlint) | pass, 0 warnings |
-| 5 | `npm run build --prefix frontend` (`tsc -b && vite build`) | pass, about 248 kB JS (76 kB gzip) |
-| 6 | `cd frontend; npx playwright test` | **3 passed** (approve → VERIFIED journey with duplicate delivery; ledger outage → INDETERMINATE; featured preset → NO ACTION NEEDED without a patch) |
-| 7 | `.venv\Scripts\pip-audit --skip-editable` | no known vulnerabilities |
-| 8 | `npm audit --prefix frontend --omit=dev --audit-level=high` | 0 vulnerabilities in shipped dependencies |
-| 9 | `npm audit --prefix frontend` (full tree) | 5 high, all one advisory: picomatch ReDoS (GHSA-fc5q-39xc-vjpf), reached through Vite build tooling, no fixed release. CI now audits build tooling at `critical` (rationale in SECURITY_MODEL) |
-| 10 | `docker build -t integrationrescue:local .` | pass; image 287 MB |
-| 11 | `docker run --rm integrationrescue:local python -c "import integrationrescue.api"` (no access code) | refuses to start (ConfigError), as intended |
-| 12 | Container in demo mode + `scripts/verify_deployment.py --url http://127.0.0.1:8090` | **15/15**; `HEAD /` 200; the 5 committed evaluation runs are visible in the Evaluation lab; runs as uid 10001; health check "healthy"; admin reset re-seeds 2 examples |
-| 13 | `scripts/serve_demo.py` + `verify_deployment.py` (baseline) | 15/15 |
-| 14 | `scripts/serve_demo.py` (live config) + `verify_deployment.py --provider gemini` | **15/15**, incident `inc_7ddeca473e` VERIFIED, 14 model calls ([evidence/live](../evidence/live/README.md)) |
-| 15 | `python scripts/check_links.py` | 0 broken relative links |
-| 16 | `python scripts/script_timing.py competition/DEMO_SCRIPT_2_MIN.md competition/PITCH_SCRIPT_6_MIN.md` | demo 218 words (1:33 at 140 wpm); presentation 451 words (3:13) |
-| 17 | `python scripts/summarize_evidence.py` | reproduces every figure in TECHNICAL_EVIDENCE |
+| 1 | `./scripts/dev.ps1 preflight` (new: ruff, pytest, frontend lint and build, docker build, refusal check, 15-check judge flow in the container) | **PREFLIGHT PASSED** (third run; see "Flaky failure" below) |
+| 2 | `cd backend; ..\.venv\Scripts\python -m pytest -q -rs` (Windows) | **117 passed, 2 skipped** (POSIX-only resource-limit tests) |
+| 3 | Same suite on Linux in the image: `docker run … integrationrescue:preflight python -m pytest` | **119 passed**, 0 skipped |
+| 4 | `ruff check backend` · `ruff check scripts --config backend/pyproject.toml` | pass |
+| 5 | `npm run lint --prefix frontend` · `npm run build --prefix frontend` | pass |
+| 6 | `cd frontend; npx playwright test` | **3 passed** |
+| 7 | `pip-audit --skip-editable` | no known vulnerabilities |
+| 8 | `npm audit --omit=dev --audit-level=high` · full tree `--audit-level=critical` | 0 shipped vulnerabilities · full tree passes at critical (5 high: picomatch build-tool advisory, unchanged, documented) |
+| 9 | `python -m integrationrescue.evaluation --seeds 101` (deterministic smoke) | 11 runs, expected outcome 9/11 (the 2 misses are schema_drift, by design), false VERIFIED 0, duplicate charges 0 |
+| 10 | Container: `docker build`; refusal without access code; `verify_deployment.py` | build ok; refuses to start; **15/15** |
+| 11 | `node frontend/scripts/capture-screenshots.mjs` against a live-Gemini judge demo | 14 screenshots; incident VERIFIED through the human-approval step |
+| 12 | `python scripts/build_deck.py` + `scripts/render_deck.ps1` | 15 slides rendered; all inspected (DECK_QA.md); every notes page has an evidence source |
+| 13 | `python scripts/check_links.py` | 54 Markdown files, 0 broken links |
+| 14 | `python scripts/script_timing.py competition/DEMO_SCRIPT_2_MIN.md competition/PITCH_SCRIPT_6_MIN.md` | demo 236 words = 1:41 at 140 wpm (1:48 at 130); presentation 512 words = 3:39 at 140 wpm, full pitch 5:39 (5:56 at 130) |
+| 15 | `python scripts/summarize_evidence.py` | reproduces TECHNICAL_EVIDENCE figures (unchanged) |
+| 16 | Searches: false UAE-location phrases, stale CI runs, "every software company", secrets, local paths, the session's throwaway codes | none found in the changed files (see FINAL_RELEASE_CHECKLIST) |
 
-## Defects found and fixed during verification
-1. **Playwright backend loaded the developer's real `.env` key.** A new test selected a featured preset whose
-   recommended provider is Gemini, so two accidental live incidents started. They were cut off when the test
-   server stopped and used a few free-tier requests, at no money cost. Fix: `IR_SKIP_DOTENV=1` in
-   `frontend/playwright.config.ts`. The tests now pass on the baseline. Backend tests already had this isolation.
-2. **Ambiguous browser-test locator** after adding featured incident cards with the same text as a fault checkbox.
-   Fix: target the checkbox by role (same intent, not weakened).
-3. **CI would fail today on `npm audit --audit-level=high`** (new picomatch advisory with no fix). Fix: separate
-   audits for shipped and build-time dependencies (documented).
-4. A test imported the old private `_child_env` helper, which moved to `security/child.py`. Updated the import; the
-   assertion is unchanged.
+## Flaky failure (reported, not hidden)
+In the second preflight run, `tests/integration/test_demo_mode.py::test_judge_flow_requires_human_approval` failed
+once. The summary line did not show the assertion because the preflight filtered its output. It did not reproduce in
+the next four runs: the file alone (17 passed), all integration tests (56 passed), the full suite on Windows
+(117 + 2 skipped), and the full suite on Linux (119). The preflight passed on its third run. The test was **not**
+loosened. Instead, every assertion in it now carries the response text or phase/outcome details, its wait helper
+reports the last timeline events on timeout, and the preflight prints `-rf --tb=short`, so a repeat will show the
+cause. The likely cause is machine load (Docker Desktop's VM had just started) against a 120-second wait, but that
+is unconfirmed.
 
-## Warnings and limitations of this verification
-- `ruff format --check` reports 31 files that would be reformatted. Formatting is not an enforced project check (only
-  `ruff check`), so the code was not mass-reformatted, to keep the diff reviewable.
-- No Python type checker (mypy/pyright) is configured. Typing is enforced only by Pydantic at runtime.
-- CI on GitHub: run 44201180724 for `7b04941` passed all three jobs, including the container job that builds the image and
-  runs `verify_deployment.py` inside it.
-- The container was tested on Docker Desktop (Linux VM), not on the hosting platform. No public deployment exists.
-- One live end-to-end run is a demonstration, not a reliability measurement.
-- Local helper packages installed in the venv only (not project dependencies): `pyyaml` (validating workflow YAML)
-  and `python-pptx` (building the deck draft).
+## Changes verified in this pass
+- Evaluation lab: runs excluded as infrastructure errors now show "—" instead of a diagnosis ✓ (build + Playwright).
+- `scripts/deploy_preflight.ps1` (new) fixed after two script bugs found while running it: PowerShell 5.1 turned the
+  expected refusal's stderr into a terminating error, and a quoting error.
+- `scripts/record_demo.ps1`, `scripts/render_deck.ps1`: parse-checked; render_deck used for all deck previews.
+
+## Not covered
+No public deployment (needs the founder's Render account). CI has not run on this pass's changes (not pushed). One
+live incident is a demonstration, not a reliability measurement. No Python type checker is configured.

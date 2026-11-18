@@ -14,11 +14,11 @@
 | 18 | Complete demo succeeds | ✅ live Gemini and baseline, local; ❌ no public URL |
 | 19 | Metrics from actual runs | ✅ committed in `evidence/` |
 | 20 | Documentation accurate | ✅ as of 2026-11-18 |
-| 21 | Repo clean and reproducible | ✅ committed and pushed (`7b04941`) |
-| 22 | CI verified | ✅ `7b04941`: run 44201180724, backend + frontend + container jobs green |
+| 21 | Repo clean and reproducible | ✅ `a3ffbcd` pushed; 🟡 later 2026-11-18 changes awaiting push approval |
+| 22 | CI verified | ✅ `a3ffbcd`: run 44201542793, backend + frontend + container jobs green |
 | 23 | Multimodal | ❌ not started |
 | 24 | Live vs baseline clearly labelled | ✅ UI, reports, evals, docs |
-| 25 | Competition materials | 🟡 written; recordings, deck design, validation evidence are founder actions |
+| 25 | Competition materials | 🟡 written and timed; deck is a final-design candidate (founder assets missing); recordings and validation evidence are founder actions |
 | 26 | Limitations documented | ✅ `docs/LIMITATIONS.md` |
 | 27 | Deployable container | ✅ built and verified locally; ❌ not deployed |
 

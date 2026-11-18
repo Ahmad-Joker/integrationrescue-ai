@@ -1,49 +1,61 @@
 # Submission readiness (updated 2026-11-18)
 
 Status key: **PASS** done and verified · **PARTIAL** exists but incomplete · **MISSING** not started · **USER ACTION**
-only the founder can finish it. "Verified" means checked by a test, a command run, or a file; "proposed" means
-written but not yet proven.
+only Ahmad can finish it. "Verified" means checked by a test, a command run, a render or a file; "proposed" means
+written but not proven.
 
-Requirement source: the founder's brief. The official page https://dubaichamberdigital.com/en/create-ai-agents
-(updated 15 Oct 2026, read 2026-11-18) confirms prototype, pitch deck, demo video, English only, and a deadline of
-"January 2027" with no exact day. It does not list the 6-minute pitch video, Business Model Canvas, Agent Card or
-judging weights; confirm those in the portal (USER_ACTIONS A9).
+**Official context (founder-provided, 2026-11-18):** the submission portal opens **4 December 2026**; the deadline is
+**4 January 2027**; materials in English. Required: working prototype, judge access, pitch deck, 2-minute real-agent
+demo, 6-minute pitch containing the demo, Business Model Canvas, Agent Card. Prototype access must stay up through
+the end of the championship.
+
+**Latest CI:** commit `a3ffbcdba0db4a58ee4e0b870270b2e066b8d1a9`, run
+[44201542793](https://github.com/Ahmad-Joker/integrationrescue-ai/actions/runs/44201542793): backend, frontend
+and container jobs all successful. This session's changes are not pushed yet and have no CI run.
+
+## Readiness
+| Figure | Estimate | Basis |
+|---|---|---|
+| **Technical prototype** | **95%** | working agent, live Gemini evidence, safety controls, 119 backend tests, browser tests, container verified; gaps: no per-run OS isolation, code repair unreliable (0/5) |
+| **Submission package (written and generated materials)** | **90%** | Agent Card, BMC, scripts timed, deck rendered and QA'd, validation kit, deployment handoff; missing only founder assets (email, photo, video links, URL) |
+| **Founder-only completion** | **10%** | done: commits pushed with green CI. Not done: deployment, both recordings, contact email, interviews, portal submission |
+
+**The complete submission is not ready.** It is blocked by deployment (needs Ahmad's Render login and secrets), the two
+videos (need Ahmad's face and voice), the founder contact details, and real interviews.
 
 ## Requirements checklist
 | # | Requirement | Status | Supporting file / test | Done this session | Remaining action | Verified? |
 |---|---|---|---|---|---|---|
-| 1 | Working, judge-testable prototype | **PARTIAL** (works locally and in the container; no public URL) | `scripts/verify_deployment.py` 15/15 on the local demo server and the container; `docs/JUDGE_ACCESS.md` | demo mode, container, deploy config, verification script | deploy + verify URL (A2, A3) | verified locally; deployment not done |
-| 2 | Meaningful agent workflow: objective → decisions → tools → action → verified result | **PASS** | `evidence/live/README.md` (live Gemini, 14 tool calls, VERIFIED); `tests/integration/test_incident_e2e.py` | live end-to-end run recorded | — | verified |
-| 3 | Testing, limitations, reliability, human oversight | **PASS** | `docs/VERIFICATION_REPORT.md`, `competition/TECHNICAL_EVIDENCE.md`, `docs/LIMITATIONS.md`, `docs/SECURITY_MODEL.md` | report, limitations, evidence consolidation, new tests | — | verified locally and in CI (run 44201180724) |
-| 4 | Pitch deck, 12–15 slides | **PARTIAL** | `competition/PITCH_DECK.md`, `deck_data.json`, `IntegrationRescue_Competition_Deck.pptx` (15 slides, text-first draft, rendered and checked in PowerPoint) | spec + generated draft | add visuals, demo embed, contacts (A7) | draft verified to open and render |
-| 5 | Demo ≤ 2 minutes of the real agent | **USER ACTION** | `DEMO_SCRIPT_2_MIN.md` (218 words ≈ 1:33 at 140 wpm), shot list, recording and backup checklists | script and package | record (A5) | script timing measured; video not recorded |
-| 6 | 6-minute pitch video (2-min demo + ~4-min business), face visible | **USER ACTION** | `PITCH_SCRIPT_6_MIN.md` (451 words ≈ 3:13 at 140 wpm for the 4-min part), `PITCH_TIMING.md`, recording checklist | script and timing | record (A6) | timing measured; video not recorded |
-| 7 | Business Model Canvas | **PASS** (content); hypotheses unvalidated | `BUSINESS_MODEL_CANVAS.md` | written | export to PDF if the portal requires | proposed (hypotheses labelled) |
-| 8 | Agent Card | **PASS** | `AGENT_CARD.md` | written, checked against code (tool names, counts) | add contact email | verified against code |
-| 9 | English-language materials | **PASS** | all docs | — | — | verified |
-| 10 | Judge access throughout the championship | **USER ACTION** | `docs/DEPLOYMENT.md`, `render.yaml`, `docs/JUDGE_ACCESS.md` | deployment-ready | deploy, then maintain until May 2027 (A2–A4) | not deployed |
-| 11 | Real value and problem validation (20%) | **MISSING** (plan ready) | `PROBLEM_VALIDATION_PLAN.md`, `CUSTOMER_INTERVIEW_SCRIPT.md`, `VALIDATION_EVIDENCE_TEMPLATE.md`, `MARKET_ANALYSIS.md` | plan, script, template, sizing method | interviews (A10) | no evidence exists |
-| 12 | Technical execution and reliability (20%) | **PASS** with a known gap (code repair 0/5) | TECHNICAL_EVIDENCE, VERIFICATION_REPORT, CI workflow | demo-mode tests, provider-failure tests, Linux test run, container job | more live code-repair runs (optional) | verified |
-| 13 | Trust, safety, human oversight (15%) | **PASS** | SECURITY_MODEL, `test_demo_mode.py`, `test_provider_failures.py`, `test_child_limits.py`, adversarial tests | access control, limits, child rlimits, outage labelling | per-run OS isolation (documented gap) | verified |
-| 14 | Innovation and defensibility (15%) | **PARTIAL** | COMPETITIVE_POSITIONING, COMPARISON_PROTOCOL, `integrationrescue/comparison.py` + tests | comparison harness and protocol | run the comparison (B2) | harness verified; no results |
-| 15 | Business viability and scalability (20%) | **PARTIAL** | PRICING_AND_UNIT_ECONOMICS (measured token usage), GO_TO_MARKET, MARKET_ANALYSIS | written | validate pricing (B1, A10) | proposed |
-| 16 | Pitch and communication (10%) | **PARTIAL** | scripts, deck, JUDGE_QA, EXECUTIVE_SUMMARY | written and timed | rehearse and record | proposed |
-| 17 | CI green on the current commit | **PASS** | `.github/workflows/ci.yml` (backend, frontend, container jobs; no secrets) | CI hardened, container job added | — | verified: run 44201180724 on `7b04941`, all 3 jobs green |
-| 18 | No secrets or private data committed | **PASS** | secret scan in FINAL_RELEASE_CHECKLIST; `.dockerignore`; `.env` ignored | scanned | B5 (`.claude/launch.json` local path, pre-existing) | verified |
-| 19 | Live AI clearly distinguished from the baseline | **PASS** | UI banners, eval lab labels, docs | eval lab labels live vs baseline | — | verified (browser test + screenshots) |
-| 20 | Submission through the official portal | **USER ACTION** | USER_ACTIONS A11 | — | submit | — |
+| 1 | Working, judge-testable prototype | **PARTIAL** (local and container; no public URL) | `scripts/verify_deployment.py` 15/15 on the container (preflight); `docs/JUDGE_ACCESS.md` | preflight script; screenshot run on the judge demo | deploy + verify (USER_ACTIONS A4–A5) | verified locally |
+| 2 | Meaningful agent workflow with a verified result | **PASS** | `evidence/live/README.md`: two live Gemini runs (`inc_7ddeca473e`, `inc_2376f4f829`), both VERIFIED | second live run captured as screenshots | — | verified |
+| 3 | Testing, limitations, reliability, oversight | **PASS** | `docs/VERIFICATION_REPORT.md`, `TECHNICAL_EVIDENCE.md`, `docs/LIMITATIONS.md`, `docs/SECURITY_MODEL.md` | final verification re-run | CI on the new commit | verified locally |
+| 4 | Pitch deck, 12–15 slides | **PARTIAL**: final-design candidate awaiting founder assets | `IntegrationRescue_Competition_Deck.pptx` (15 slides, real screenshots), `PITCH_DECK.md`, `deck_data.json`, `DECK_QA.md`, `deck_preview/` | rebuilt with screenshots and diagrams; every slide rendered and inspected | email, photo, video link, URL/QR (A7) | renders inspected |
+| 5 | 2-minute real-agent demo | **USER ACTION** | `DEMO_SCRIPT_2_MIN.md` (236 words ≈ 1:41 at 140 wpm), shot list with reference stills, `./scripts/dev.ps1 record` | wording made precise; 12-point proof list; one-command setup | record (A6) | script timed; video not recorded |
+| 6 | 6-minute pitch with the demo, face visible | **USER ACTION** | `PITCH_SCRIPT_6_MIN.md` (512 words: 2:00 + 3:39 = 5:39 at 140 wpm), `PITCH_TIMING.md`, checklist | founder section, design-partner ask, Egypt/UK/UAE market entry | record (A8) | timed; video not recorded |
+| 7 | Business Model Canvas | **PASS** (hypotheses labelled) | `BUSINESS_MODEL_CANVAS.md` | founder location corrected | export to PDF if the portal needs it | proposed (unvalidated) |
+| 8 | Agent Card | **PASS** except the contact email | `AGENT_CARD.md` | owner line: Ahmad Essam Abdelaziz, AAST, Egypt | email (A3) | verified against code |
+| 9 | English materials | **PASS** | all docs | — | — | verified |
+| 10 | Judge access through the championship | **USER ACTION** | `render.yaml`, `Dockerfile`, `scripts/deploy_preflight.ps1`, `docs/DEPLOYMENT.md`, USER_ACTIONS "Deployment, step by step" | preflight + exact handoff | deploy, verify, maintain (A4, A5, A10) | not deployed |
+| 11 | Real value and problem validation (20%) | **MISSING**: kit ready, no evidence | `PROBLEM_VALIDATION_PLAN.md`, `INTERVIEW_TARGET_PROFILE.md`, `INTERVIEW_OUTREACH_MESSAGES.md`, `CUSTOMER_INTERVIEW_SCRIPT.md`, `INTERVIEW_TRACKER_TEMPLATE.csv`, `VALIDATION_SUMMARY_TEMPLATE.md` | target profile, 7 message templates, tracker, summary template | interviews (B1) | 0 interviews |
+| 12 | Technical execution and reliability (20%) | **PASS** with a known gap | TECHNICAL_EVIDENCE, VERIFICATION_REPORT, CI | — | more live code-repair runs (optional) | verified |
+| 13 | Trust, safety, oversight (15%) | **PASS** | SECURITY_MODEL; demo-mode, provider-failure, child-limit, adversarial tests | — | per-run OS isolation (documented gap) | verified |
+| 14 | Innovation and defensibility (15%) | **PARTIAL** | COMPETITIVE_POSITIONING, COMPARISON_PROTOCOL, `comparison.py` | — | run the comparison (B6) | harness verified; no results |
+| 15 | Business viability and scalability (20%) | **PARTIAL** | PRICING (measured tokens), GO_TO_MARKET (Egypt → UK → UAE → global), MARKET_ANALYSIS | location and market-entry corrected | validate pricing (B5, B1) | proposed |
+| 16 | Pitch and communication (10%) | **PARTIAL** | scripts, deck, JUDGE_QA | timed, deck visuals | rehearse and record | proposed |
+| 17 | CI green on the current commit | **PASS for `a3ffbcd`**; pending for this session's commit | `.github/workflows/ci.yml` | — | push after OK (A2) | run 44201542793 |
+| 18 | No secrets or private data committed | **PASS** | FINAL_RELEASE_CHECKLIST scan | re-scanned incl. screenshots and deck | B4 (`.claude/launch.json`) | verified |
+| 19 | Live AI distinguished from the baseline | **PASS** | UI banners, eval lab labels, deck slide 9 notes | — | — | verified (screenshots) |
+| 20 | Portal submission (4 Dec 2026 – 4 Jan 2027) | **USER ACTION** | USER_ACTIONS A9, A11 | — | submit | — |
+| 21 | Placeholders tracked | **PASS** | `PLACEHOLDER_REGISTER.md` | created | fill (A3, A5–A7) | verified by search |
 
-## Readiness estimate
-**About 65%** of what the submission needs. Engineering, safety, evidence and written materials are close to
-complete (roughly 90% of the technical criteria). What remains are founder-only items: deployment, the two
-recordings, deck design, customer validation and the portal submission. Validation is the single largest scoring
-risk (20% weight, no evidence yet).
-
-## Contradictions resolved in this session
-- "CI never run" (PROJECT_STATUS) → corrected: green runs exist up to `de04559`; the new commit is pending.
-- "79 tests" / "3 families" / "live results not yet measured" (status, requirements, executive summary) → corrected to
-  the measured figures (119 backend tests, 5 families, live Gemini results).
-- "Docker unavailable" (blockers) → it started on 2026-11-18; the image was built and tested.
-- "Claude provider; live run blocked" (requirements) → live Gemini is the provider with evidence; Claude remains
-  fake-client tested only.
-- The four-minute baseline demo script → replaced by the two-minute live Gemini script.
+## Corrections made this session
+- **Founder location:** "the founder is based in the UAE", "UAE-first through the founder's network" and "here in the
+  UAE" (market analysis, go-to-market, validation plan, canvas, pitch, deck) → Ahmad is based in Egypt; Egypt and UK
+  are the founder-access markets; the UAE is a championship-enabled expansion opportunity, subject to validation.
+- **Dates:** "January 2027, no day" → portal 4 December 2026, deadline 4 January 2027.
+- **CI:** references to run 44201180724 / `7b04941` → latest green run 44201542793 on `a3ffbcd`.
+- **Overclaim:** "This hits every software company that sells subscriptions" → "can hit any software company whose
+  billing controls product access".
+- **Demo wording:** "This is the live Gemini agent, not a script" → "a real Gemini-powered run: the agent produces the
+  investigation path; it is not replayed from our rule-based baseline".
+- **Evaluation lab UI:** runs excluded as infrastructure errors no longer show a diagnosis ✓.

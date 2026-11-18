@@ -1,12 +1,16 @@
-# Customer interview script (30 minutes)
+# Customer interview script (20 minutes; 30 with the optional demo)
 
 Rules: ask about **past events**, not hypotheticals. Don't pitch until the end. Take notes in a copy of
 [VALIDATION_EVIDENCE_TEMPLATE.md](VALIDATION_EVIDENCE_TEMPLATE.md). Ask permission before recording or quoting.
 Never put real customer names or personal data into this public repository: anonymise (role, size band, stack).
 
+**20-minute version:** skip questions 3, 10 and 14, shorten "The last incident" to 8 minutes, and offer the demo
+as a link afterwards. Never cut 4–9, 11, 13, 14b or 16: they carry the hypotheses.
+
 ## Opening (2 min)
-"I'm building a tool around integration failures between billing and product access. I'm not selling today. I want
-to learn how this works at your company. May I take notes? Nothing will be shared with your name attached."
+"I'm Ahmad, an AI student at AAST, building a prototype around integration failures between billing and product
+access. I'm not selling today. I want to learn how this works at your company." Then read the consent text from
+[INTERVIEW_OUTREACH_MESSAGES.md](INTERVIEW_OUTREACH_MESSAGES.md) §7 and record both answers in the tracker.
 
 ## Context (5 min)
 1. What's your role, and roughly how big is the team or company?
@@ -28,6 +32,9 @@ to learn how this works at your company. May I take notes? Nothing will be share
 12. Would you give a tool read-only access to billing and your integration repo? In test mode? Under what conditions?
 13. Who would decide to buy something like this? Is there a budget line it would come from?
 14. What do you pay today for related tools (incident management, observability, AI coding)?
+14b. "Some tools charge per seat; we're considering charging only when a fix is independently verified, plus a small
+   platform fee. How would that land with whoever approves the budget?" (Record the reaction; do not propose a price
+   first. If they name a number, note it exactly.)
 
 ## Demo and close (5 min)
 15. Show the two-minute demo. "What's the first thing you'd worry about? What would make this useless for you?"
@@ -35,5 +42,18 @@ to learn how this works at your company. May I take notes? Nothing will be share
 17. "Who else should I talk to?"
 
 ## After the call (same day)
-Fill in the evidence template: facts only, separate from your interpretation. Mark any commitment signal exactly as
-given. Do not round "maybe" up to "yes".
+Fill in the evidence template and one row of the tracker (`INTERVIEW_TRACKER_TEMPLATE.csv` copy, kept privately or
+anonymised): facts only, separate from your interpretation. Mark any commitment signal exactly as given. Do not
+round "maybe" up to "yes".
+
+## Mapping questions to what we must measure
+| Measure | Questions |
+|---|---|
+| Incident happened / frequency | 4, 9 |
+| Engineering hours | 6, 7 |
+| Customer impact, refunds, churn | 5, 8 |
+| Current tools | 10 |
+| Trust and approval requirements | 11, 12 |
+| Willingness to pilot | 16 |
+| Budget owner | 13 |
+| Reaction to outcome-based pricing | 14b |

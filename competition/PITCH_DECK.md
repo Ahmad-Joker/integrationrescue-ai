@@ -1,141 +1,139 @@
 # Pitch deck specification (15 slides)
 
-Generated from `competition/deck_data.json` by `scripts/build_deck.py` (2026-11-18). Edit the JSON, not this file. Every figure must match [TECHNICAL_EVIDENCE.md](TECHNICAL_EVIDENCE.md).
+**Status: final-design candidate awaiting founder assets (email, photo, demo video, public URL, QR code).** Generated from `competition/deck_data.json` by `scripts/build_deck.py` (2026-11-18). Edit the JSON, not this file. Every figure must match [TECHNICAL_EVIDENCE.md](TECHNICAL_EVIDENCE.md). Visual QA: [DECK_QA.md](DECK_QA.md).
 
-Design: dark background, one message per slide, at most 4 short bullets, large numbers for evidence. The demo video is embedded on slide 7 (or linked, if the portal needs a separate upload). Draft file: `IntegrationRescue_Competition_Deck.pptx`.
+Design: dark theme, one message per slide, real screenshots from a live Gemini run (fictional data, `competition/screenshots/`), large evidence numbers, the code-repair limitation shown at equal size, hypotheses labelled, amber placeholder boxes for missing founder assets. File: `IntegrationRescue_Competition_Deck.pptx`.
 
 ## 1. IntegrationRescue
 
 **Key message:** The AI agent that fixes broken SaaS integrations and proves the business outcome.
 
-**Visible text (maximum):**
-- Investigates · repairs in a sandbox · human-approved · independently verified
-- Create AI Agents Championship · Best Business AI Agent
-- Ahmad · <email>
+**Visible text:**
+- Investigates
+- Repairs in a sandbox
+- Human-approved
+- Independently verified
+- Invoice paid
+- Exactly one charge
+- Plan matches payment: Pro
+- Granted exactly once
 
-**Visual:** Logo mark + one-line value proposition on a dark background
+**Speaker notes:** Title card at the start of the presentation part. No narration needed.
 
-**Speaker notes:** Shown during the first seconds or as a title card; no narration needed.
+**Evidence source:** README.md; screenshot: live run inc_2376f4f829
 
-**Evidence source:** README.md
-
-**Needs founder validation:** Founder name/contact
+**Needs founder validation:** Founder email
 
 ## 2. Paid. Still on Free.
 
-**Key message:** Every system says success while the customer loses what they paid for.
+**Key message:** Every system reports success while the customer loses what they paid for.
 
-**Visible text (maximum):**
-- Card charged ✓  Webhook 202 ✓  Access: Free ✗
-- No alert fires
-- Support → engineering → hours of manual tracing
+**Visible text:**
+- Billing · Charge succeeded
+- Webhook · 202 Accepted
+- Sync service · No error logged
+- Customer access · Still on Free
+- No alert fires. Support escalates. An engineer traces it by hand across four systems.
 
-**Visual:** Three green ticks (Billing, Webhook, Sync) and one red cross (Customer access)
+**Speaker notes:** What you just saw is a failure no dashboard catches. The customer paid, every system said success, and the customer still couldn't use what they paid for. Someone has to notice. Then an engineer spends hours tracing it across billing, webhooks, code and access data.
 
-**Speaker notes:** What you just saw is a failure no dashboard catches...
+**Evidence source:** Simulated incident family payment_entitlement (fictional)
 
-**Evidence source:** Simulated incident family payment_entitlement
-
-**Needs founder validation:** Any time/cost figure must come from interviews
+**Needs founder validation:** Any time or cost figure must come from interviews
 
 ## 3. Who has the problem
 
-**Key message:** SaaS teams whose billing drives product access, especially small teams without a billing specialist.
+**Key message:** B2B SaaS teams whose billing system controls product access.
 
-**Visible text (maximum):**
-- Feels it: support, integration engineers, finance
-- Pays (hypothesis): head of engineering or support
-- Validation: 10 interviews in progress / planned
+**Visible text:**
+- Support · Angry customer who paid and is locked out
+- Integration & platform engineers · Hours of tracing across billing, webhooks, code
+- Finance / RevOps · Refunds and revenue leakage
+- Buyer hypothesis: head of engineering or support (unvalidated)
+- Validation: interview plan ready · 0 interviews completed
 
-**Visual:** Persona strip: support agent, platform engineer, finance lead
+**Speaker notes:** This can hit any software company whose billing controls product access, especially small teams with no billing specialist. Support feels it first, then engineering, then finance through refunds. Fallback until interviews exist: We're now interviewing SaaS teams to measure how often this happens and what it costs.
 
-**Speaker notes:** Who has it segment of the pitch script.
+**Evidence source:** PROBLEM_VALIDATION_PLAN.md (no evidence yet)
 
-**Evidence source:** PROBLEM_VALIDATION_PLAN.md
-
-**Needs founder validation:** Replace 'planned' with real interview counts once done; never invent
+**Needs founder validation:** Replace the status line with real interview counts once they exist; never invent
 
 ## 4. Why today's tools stop short
 
-**Key message:** Monitoring trusts the 202; coding agents trust green tests; nobody checks the customer's outcome.
+**Key message:** Each tool checks its own layer. Nobody checks the customer's outcome.
 
-**Visible text (maximum):**
-- Monitoring: HTTP OK = fine
-- AI SRE: needs an alert
-- Coding agents: tests pass ≠ customer fixed
+**Visible text:**
+- Monitoring · HTTP 202 = fine
+- AI SRE tools · Start from an alert; none fires
+- Coding agents · Tests pass ≠ customer fixed
+- Integration platforms · "The run succeeded"
+- The gap: verifying the business outcome across systems
+- Comparison with a general coding agent: protocol ready, not yet run. No superiority claim.
 
-**Visual:** Three columns with where each tool stops, and a gap labelled 'business outcome'
+**Speaker notes:** Today's tools stop early. Monitoring sees a 202 and is happy. Coding assistants can write a patch, but they judge success by tests passing, not by whether the customer actually got access.
 
-**Speaker notes:** Today's tools segment. No superiority claim: comparison not yet run.
-
-**Evidence source:** COMPETITIVE_POSITIONING.md
+**Evidence source:** COMPETITIVE_POSITIONING.md, COMPARISON_PROTOCOL.md
 
 **Needs founder validation:** none
 
 ## 5. IntegrationRescue
 
-**Key message:** An AI agent that investigates like a careful engineer and only claims what an independent check proves.
+**Key message:** An AI agent that investigates like a careful engineer, and only claims what an independent check proves.
 
-**Visible text (maximum):**
-- Live Gemini agent decides what to investigate
-- Smallest repair, tested in isolation
-- Human approves · independent verifier proves
+**Visible text:**
+- Live Gemini agent chooses every tool call and hypothesis
+- Smallest repair, tested in an isolated copy
+- A human approves; a read-only verifier proves
 
-**Visual:** Product screenshot: incident page with LIVE AI AGENT banner
+**Screenshots:** `screenshots/04_incident_overview.png`
 
-**Speaker notes:** Solution segment, first half.
+**Speaker notes:** IntegrationRescue is an AI agent that works like a careful engineer. It forms hypotheses, checks each system, reproduces the failure in a copy and proposes the smallest fix.
 
-**Evidence source:** AGENT_CARD.md
+**Evidence source:** Screenshot: live Gemini run inc_2376f4f829 (13 model calls, VERIFIED); AGENT_CARD.md
 
 **Needs founder validation:** none
 
 ## 6. How the agent works
 
-**Key message:** The model decides; deterministic code enforces.
+**Key message:** The model decides. Deterministic code enforces.
 
-**Visible text (maximum):**
-- Investigate → Reproduce → Patch & test → Human approval → Promote → Verify
-- Says NO ACTION NEEDED or INDETERMINATE when true
-- Budgets, allow-lists, sandbox in code
+**Visible text:**
+- Investigate
+- Reproduce
+- Patch & test
+- Human approval
+- Promote
+- Independent verify
 
-**Visual:** Pipeline diagram with the approval gate and verifier highlighted
+**Speaker notes:** It tests the fix and asks a human to approve. Then a separate verifier, which the AI cannot influence, checks the business result: right plan, one charge, one grant. That's why it's an agent and not an automation: it decides what to investigate, whether a fix is needed at all, and when it can't know.
 
-**Speaker notes:** Why it is an agent, not an automation: decides what to check, whether to fix, when it cannot know.
-
-**Evidence source:** docs/ARCHITECTURE.md
+**Evidence source:** docs/ARCHITECTURE.md, AGENT_CARD.md
 
 **Needs founder validation:** none
 
 ## 7. Live demo
 
-**Key message:** A real live Gemini run, end to end, in two minutes.
+**Key message:** A real Gemini-powered run, end to end, in under two minutes.
 
-**Visible text (maximum):**
-- <embedded or linked 2-minute video>
-- Recorded live on <date>
+**Visible text:**
 
-**Visual:** Embedded video (or thumbnail + unlisted link)
+**Screenshots:** `screenshots/02_new_incident.png`
 
-**Speaker notes:** The demo plays here (0:00–2:00 of the pitch video).
+**Speaker notes:** The two-minute demo plays here (0:00-2:00 of the pitch video). It is a recording of a real Gemini-powered run; the investigation path is produced by the agent, not replayed from the baseline.
 
 **Evidence source:** DEMO_SCRIPT_2_MIN.md
 
-**Needs founder validation:** Video link; Recording date
+**Needs founder validation:** Demo video link; Recording date
 
 ## 8. Architecture
 
-**Key message:** One container: agent, policy layer, simulated systems, verifier, dashboard.
+**Key message:** One container: agent, policy layer, simulated systems, sandbox, verifier, dashboard.
 
-**Visible text (maximum):**
-- Typed, phase-gated tools · patch policy · sandbox + replay
-- Read-only verifier derives truth from billing
-- Gemini today; model-agnostic (Claude adapter, baseline)
+**Visible text:**
 
-**Visual:** Box diagram: Ticket → Agent (Gemini) ↔ Tools → Simulators; Policy; Sandbox; Approval; Verifier (read-only)
+**Speaker notes:** Backup slide for Q&A; not narrated in the six-minute video. Gemini today; a Claude adapter exists (fake-client tested only); the deterministic baseline is for tests and comparison and is never presented as the AI.
 
-**Speaker notes:** Backup slide for Q&A; not narrated in the 6-minute video.
-
-**Evidence source:** docs/ARCHITECTURE.md, docs/SECURITY_MODEL.md
+**Evidence source:** docs/ARCHITECTURE.md, docs/SECURITY_MODEL.md, Dockerfile
 
 **Needs founder validation:** none
 
@@ -143,17 +141,18 @@ Design: dark background, one message per slide, at most 4 short bullets, large n
 
 **Key message:** Measured on live Gemini, including what does not work yet.
 
-**Visible text (maximum):**
-- 31/31 correct diagnoses (live, scored)
-- 16/17 correct outcomes after tool fix · 11/11 config & trust repairs verified
-- 0 false success claims · 0 duplicate charges (72 runs)
-- Code repair: 0/5, not yet reliable
+**Visible text:**
+- 31/31 · correct diagnoses · ok
+- 16/17 · correct outcomes after the tool fix · ok
+- 11/11 · config & trust repairs verified · ok
+- 0 · false success claims · ok
+- 0 · duplicate charges · ok
+- 0/5 · code repairs: not yet reliable · warn
+- Live: gemini-3.1-flash-lite, free tier, 2 seeds per variant; 31 scored live runs, 72 recorded runs in total (live + baseline). Small samples.
 
-**Visual:** Four big numbers; the code-repair number shown just as prominently
+**Speaker notes:** We measure this. In live tests with Google Gemini, the agent diagnosed all 31 scored incidents correctly. After one fix to our tools, it reached the right outcome in 16 of 17, and all 11 configuration and trust repairs were verified. Zero false success claims, zero double charges. Code repairs are not reliable yet: zero of five. We publish that too.
 
-**Speaker notes:** Evidence segment. Free-tier gemini-3.1-flash-lite, 2 seeds per variant: small samples.
-
-**Evidence source:** TECHNICAL_EVIDENCE.md, evidence/eval/
+**Evidence source:** TECHNICAL_EVIDENCE.md; evidence/eval/*.json; scripts/summarize_evidence.py
 
 **Needs founder validation:** none
 
@@ -161,32 +160,32 @@ Design: dark background, one message per slide, at most 4 short bullets, large n
 
 **Key message:** Safety lives in code, not in the prompt.
 
-**Visible text (maximum):**
-- Every repair needs human approval
-- Only the independent verifier can say VERIFIED
-- Live test found the AI trusting an unverified key → now blocked in code
-- Model outage = MODEL UNAVAILABLE, never success
+**Visible text:**
+- Every repair waits for a human
+- Only the read-only verifier can say VERIFIED
+- Live test: the AI trusted an unannounced signing key. Now blocked in code, whatever the model proposes
+- Model outage shows MODEL UNAVAILABLE, never success
 
-**Visual:** Approval gate screenshot + 'blocked' policy message
+**Screenshots:** `screenshots/10_verification_after.png`
 
-**Speaker notes:** Safety segment.
+**Speaker notes:** Safety lives in code, not in the prompt. In one test, the AI trusted a security key it should have checked. We didn't just change the prompt. We made the system refuse that change, whatever the model says. Every repair needs human approval, and only the independent check can say verified.
 
-**Evidence source:** docs/SECURITY_MODEL.md, TECHNICAL_EVIDENCE.md
+**Evidence source:** docs/SECURITY_MODEL.md; test_delivery_families.py; test_provider_failures.py; screenshots from inc_2376f4f829
 
 **Needs founder validation:** none
 
 ## 11. Defensibility
 
-**Key message:** Verified outcomes, measured on a growing library of real incident patterns.
+**Key message:** Verified outcomes on a growing library of incident patterns.
 
-**Visible text (maximum):**
-- Incident library with hidden ground truth
-- Independent verifier + audit trail
-- Connectors (planned) · model-agnostic
+**Visible text:**
+- New incident
+- Test case with hidden ground truth
+- Measured, verified agent
+- Trust → more pilots
+- Today: 5 incident families, simulated. The library grows only with real pilots.
 
-**Visual:** Flywheel: incident → test case → better agent → more trust → more incidents
-
-**Speaker notes:** Defensibility segment. Honest: library is 5 families today.
+**Speaker notes:** Our advantage is verified outcomes. Every incident becomes a test case with hidden ground truth, so we can prove reliability, and that library grows with every pilot. And we're model-agnostic.
 
 **Evidence source:** COMPETITIVE_POSITIONING.md
 
@@ -194,50 +193,48 @@ Design: dark background, one message per slide, at most 4 short bullets, large n
 
 ## 12. Business model
 
-**Key message:** Pay for proven fixes, not attempts (hypothesis).
+**Key message:** Pay for proven fixes, not attempts.
 
-**Visible text (maximum):**
-- Platform fee per connected integration
-- Fee per VERIFIED resolution; nothing for a guess
-- Enterprise: VPC verifier, SSO, audit export
+**Visible text:**
+- Platform fee · per connected integration
+- Fee per VERIFIED fix · nothing for DIAGNOSED or INDETERMINATE
+- Enterprise · VPC verifier, SSO, audit export
+- Beachhead (hypothesis): B2B SaaS, roughly 20–300 staff, billing on Stripe / Chargebee / Paddle controls product access
+- Measured: 11–18 model calls, 35k–70k input tokens per incident (live means, free tier)
 
-**Visual:** Business Model Canvas thumbnail + pricing boxes marked 'hypothesis'
+**Speaker notes:** We plan to charge for outcomes: a platform fee, plus a fee per verified fix, and nothing for a guess. Fallback: That pricing is a hypothesis we'll test with design partners.
 
-**Speaker notes:** Business segment, part 1.
-
-**Evidence source:** BUSINESS_MODEL_CANVAS.md, PRICING_AND_UNIT_ECONOMICS.md
+**Evidence source:** BUSINESS_MODEL_CANVAS.md, PRICING_AND_UNIT_ECONOMICS.md, evidence/eval
 
 **Needs founder validation:** Price points after pricing interviews
 
-## 13. Market and go-to-market
+## 13. Market entry
 
-**Key message:** Start with SaaS teams on common billing platforms, UAE first, then global via marketplaces.
+**Key message:** Validate where the founder has access; expand through the championship.
 
-**Visible text (maximum):**
-- Design partners on test-mode billing
-- Billing-platform app marketplaces
-- Integration agencies as a channel
+**Visible text:**
+- Egypt · Founder base · Interviews and first design partners
+- UK · Founder access · Remote interviews and pilots
+- UAE · Championship ecosystem · Expansion opportunity, subject to validation
+- Global · English-speaking B2B SaaS · Billing-platform marketplaces
+- Plan, not traction: no customers, pilots or interviews yet. No market-size figure is claimed.
 
-**Visual:** Map: UAE pilots → global marketplaces
+**Speaker notes:** I'm based in Egypt, so we start interviews and pilots there and in the UK, through my own network. This championship opens the UAE ecosystem as an expansion market. The product itself is global: connectors follow billing platforms, not borders.
 
-**Speaker notes:** Business segment, part 2. No market-size figure unless sourced.
-
-**Evidence source:** MARKET_ANALYSIS.md, GO_TO_MARKET.md
+**Evidence source:** GO_TO_MARKET.md, MARKET_ANALYSIS.md
 
 **Needs founder validation:** Any market number needs source, date, URL
 
 ## 14. Roadmap
 
-**Key message:** From a proven prototype to real connectors and pilots.
+**Key message:** From a measured prototype to real connectors and pilots.
 
-**Visible text (maximum):**
-- Now: prototype, 5 incident families, live Gemini
-- Next: read-only connectors, design-partner pilots
-- Then: per-run isolation, CRM family, vision
+**Visible text:**
+- Now → Working prototype, 5 incident families, Live Gemini agent, Container ready
+- Next → Read-only billing connector, Design-partner pilots (test-mode data), Coding-agent comparison
+- Then → Per-run isolation for customer code, CRM incident families, Screenshot analysis
 
-**Visual:** Three-step timeline
-
-**Speaker notes:** Roadmap segment. Dates only if committed.
+**Speaker notes:** Today it's a working prototype on simulated systems with fictional data. Next come real read-only connectors, design-partner pilots, and stronger isolation for customer code.
 
 **Evidence source:** docs/NEXT_ACTIONS.md
 
@@ -245,18 +242,14 @@ Design: dark background, one message per slide, at most 4 short bullets, large n
 
 ## 15. Proven, not guessed.
 
-**Key message:** When software breaks between systems, IntegrationRescue fixes it and proves it.
+**Key message:** We're looking for design partners: SaaS engineering teams willing to test the workflow on fictional or test-mode data.
 
-**Visible text (maximum):**
-- Ahmad · founder
+**Visible text:**
 - github.com/Ahmad-Joker/integrationrescue-ai
-- <demo URL> · <email>
 
-**Visual:** Founder photo, contact, QR code to the demo
+**Speaker notes:** I'm Ahmad Essam Abdelaziz, an artificial-intelligence student at AAST and an AI-agent developer. I built this because agents are only useful when their results can be trusted. We're looking for design partners: SaaS engineering teams willing to test the workflow on fictional or test-mode data. [Only with a verified URL:] Judges can try the live demo at the link on screen. When software breaks between systems, IntegrationRescue fixes it, and proves it. Thank you.
 
-**Speaker notes:** Close.
+**Evidence source:** Founder facts supplied by Ahmad
 
-**Evidence source:** —
-
-**Needs founder validation:** Team: add co-founders/advisors only if real; Demo URL once deployed
+**Needs founder validation:** Founder photo; Founder email; Public demo URL + QR (only after verify_deployment passes)
 

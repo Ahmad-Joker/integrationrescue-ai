@@ -1,0 +1,32 @@
+{
+  "captured_at": "2026-11-18T00:11:11.039Z",
+  "incident": "inc_2376f4f829",
+  "provider": "gemini",
+  "mode": "live",
+  "outcome": "VERIFIED",
+  "usage": {
+    "model": "gemini-3.1-flash-lite",
+    "calls": 13,
+    "input": 43921,
+    "output": 765,
+    "thinking": 0,
+    "est_cost_usd": null
+  },
+  "tool_calls": 13,
+  "shots": [
+    "01_dashboard",
+    "02_new_incident",
+    "03_mode_banner",
+    "04_incident_overview",
+    "05_tool_timeline",
+    "06_hypotheses",
+    "07_root_cause_reproduced",
+    "08_repair_diff_tests",
+    "09_approval_gate",
+    "10_verification_after",
+    "11_reproduction_before",
+    "12_verified_overview",
+    "13_eval_live_gemini",
+    "14_eval_baseline"
+  ]
+}

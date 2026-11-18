@@ -18,3 +18,9 @@ single-process app the container runs) on the founder's Windows machine. Output:
 
 One run is a demonstration, not a reliability measurement; the reliability figures are in
 [`competition/TECHNICAL_EVIDENCE.md`](../../competition/TECHNICAL_EVIDENCE.md).
+
+## Second live run: screenshot capture, 2026-11-18
+`inc_2376f4f829`, same family and fault, `gemini-3.1-flash-lite`, driven through the dashboard by
+`frontend/scripts/capture-screenshots.mjs` on a local judge-demo server. 13 model calls · 43,921 input / 765 output
+tokens · approved through the human-approval step by the capture script as "Demo reviewer" (the gate was used; auto-approval was off) · VERIFIED. Screenshots and metadata:
+`competition/screenshots/` (`capture.json`).

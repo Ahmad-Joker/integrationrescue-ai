@@ -10,7 +10,7 @@ Never paste an API key, access code or admin code into a chat, an issue, a commi
 | # | Action | Why | Exact steps | Evidence when done | Time | Depends on |
 |---|---|---|---|---|---|---|
 | A1 | ~~Push the November commits~~ | | done 2026-11-18: `a3ffbcd`, CI run 44201542793 green (backend, frontend, container) | | | |
-| A2 | **Approve and push this session's commit plan** | CI must run on the current code | review the plan in this session and say "push"; then check that all 3 jobs on the Actions tab are green | green run link | 10 min | — |
+| A2 | ~~Approve and push the deck, pitch and validation commits~~ | | done 2026-11-19: `f275ca1`, CI run 44259070565 green (backend, frontend, container) | | | |
 | A3 | **Choose a public contact email** | the Agent Card, deck and judge page need one; it must not be invented | pick the address → replace `[PLACEHOLDER: founder email]` (see PLACEHOLDER_REGISTER #1) | updated files, deck rebuilt | 10 min | — |
 | A4 | **Deploy on Render (free plan)** | judges need a URL | see "Deployment, step by step" below | service URL | 30–45 min | A2 |
 | A5 | **Verify the public URL** | never claim a deployment that wasn't tested | post-deployment commands below; both must print `15/15 checks passed` | outputs pasted into `docs/JUDGE_ACCESS.md` with the date | 15 min | A4 |

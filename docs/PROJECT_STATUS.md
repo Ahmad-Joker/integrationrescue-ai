@@ -10,8 +10,8 @@ ready but not deployed. Business validation has not started.
 - Container: image builds, refuses to start without an access code, runs as uid 10001, and passes
   `scripts/verify_deployment.py` 15/15 (deterministic).
 - Live Gemini end-to-end on the local demo server: 15/15, VERIFIED ([evidence/live](../evidence/live/README.md)).
-- CI: latest pushed commit `a3ffbcd` is green on GitHub (run 44201542793: backend, frontend, container). The deck,
-  pitch and validation-kit changes made later on 2026-11-18 are awaiting the founder's push approval.
+- CI: commit `f275ca1` (deck, pitch, demo package, validation kit, preflight) is green on GitHub (run 44259070565:
+  backend, frontend, container).
 
 ## Implemented
 Simulators (billing, entitlements, webhooks, logs) · sync service running customer code in limited child processes ·

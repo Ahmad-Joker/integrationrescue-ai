@@ -5,7 +5,7 @@ Founder-only actions (accounts, recordings, interviews, submission) are tracked 
 
 | # | Task | Importance | Files | Depends on | Done when | Status |
 |---|---|---|---|---|---|---|
-| 1 | Push the 2026-11-18 changes; confirm all three CI jobs are green | P0 | .github/workflows/ci.yml | founder OK to push | run green on GitHub | done (`a3ffbcd`, run 44201542793, all 3 jobs green); next push needs founder OK |
+| 1 | Push the 2026-11-18 changes; confirm all three CI jobs are green | P0 | .github/workflows/ci.yml | founder OK to push | run green on GitHub | done (`f275ca1`, run 44259070565, all 3 jobs green); next push needs founder OK |
 | 2 | Deploy the container and verify the public URL (deterministic + live) | P0 | Dockerfile, render.yaml, scripts/verify_deployment.py | hosting account (founder) | two 15/15 runs against the URL recorded in JUDGE_ACCESS | ready, blocked on account |
 | 3 | Record the 2-minute live demo and the 6-minute pitch | P0 | competition/DEMO_*, PITCH_* | #2 or local demo | videos uploaded unlisted | founder |
 | 4 | Customer discovery: 8–10 interviews, fill VALIDATION_EVIDENCE | P0 (business) | competition/PROBLEM_VALIDATION_PLAN.md | founder | evidence file filled with real notes | todo |

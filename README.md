@@ -22,7 +22,7 @@ verifier confirms the business state (correct plan, exactly one charge, exactly 
 | Live demo | [docs/LIVE_DEMO_RUNBOOK.md](docs/LIVE_DEMO_RUNBOOK.md) · [competition/DEMO_SCRIPT_2_MIN.md](competition/DEMO_SCRIPT_2_MIN.md) |
 | Pitch | [competition/PITCH_SCRIPT_6_MIN.md](competition/PITCH_SCRIPT_6_MIN.md) · deck (final-design candidate awaiting founder assets): [competition/IntegrationRescue_Competition_Deck.pptx](competition/IntegrationRescue_Competition_Deck.pptx), [spec](competition/PITCH_DECK.md), [QA](competition/DECK_QA.md) · [competition/BUSINESS_MODEL_CANVAS.md](competition/BUSINESS_MODEL_CANVAS.md) |
 | Validation | plan and interview kit: [competition/PROBLEM_VALIDATION_PLAN.md](competition/PROBLEM_VALIDATION_PLAN.md). **No interviews completed yet** |
-| CI | latest green run: [44201542793](https://github.com/Ahmad-Joker/integrationrescue-ai/actions/runs/44201542793) on `a3ffbcd` (backend, frontend, container) |
+| CI | latest green run: [44259070565](https://github.com/Ahmad-Joker/integrationrescue-ai/actions/runs/44259070565) on `f275ca1` (backend, frontend, container) |
 | Readiness | [competition/SUBMISSION_READINESS.md](competition/SUBMISSION_READINESS.md) · founder actions [competition/USER_ACTIONS.md](competition/USER_ACTIONS.md) · placeholders [competition/PLACEHOLDER_REGISTER.md](competition/PLACEHOLDER_REGISTER.md) |
 
 ## What the evidence shows (recorded, reproducible)

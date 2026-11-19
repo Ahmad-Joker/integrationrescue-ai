@@ -46,5 +46,5 @@ is unconfirmed.
 - `scripts/record_demo.ps1`, `scripts/render_deck.ps1`: parse-checked; render_deck used for all deck previews.
 
 ## Not covered
-No public deployment (needs the founder's Render account). CI has not run on this pass's changes (not pushed). One
+No public deployment (needs the founder's Render account). CI on this pass's changes: pushed as `f275ca1`, run [44259070565](https://github.com/Ahmad-Joker/integrationrescue-ai/actions/runs/44259070565) green (backend, frontend, container). One
 live incident is a demonstration, not a reliability measurement. No Python type checker is configured.

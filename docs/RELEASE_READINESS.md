@@ -14,8 +14,8 @@
 | 18 | Complete demo succeeds | ✅ live Gemini and baseline, local; ❌ no public URL |
 | 19 | Metrics from actual runs | ✅ committed in `evidence/` |
 | 20 | Documentation accurate | ✅ as of 2026-11-18 |
-| 21 | Repo clean and reproducible | ✅ `a3ffbcd` pushed; 🟡 later 2026-11-18 changes awaiting push approval |
-| 22 | CI verified | ✅ `a3ffbcd`: run 44201542793, backend + frontend + container jobs green |
+| 21 | Repo clean and reproducible | ✅ `f275ca1` pushed |
+| 22 | CI verified | ✅ `f275ca1`: run 44259070565, backend + frontend + container jobs green |
 | 23 | Multimodal | ❌ not started |
 | 24 | Live vs baseline clearly labelled | ✅ UI, reports, evals, docs |
 | 25 | Competition materials | 🟡 written and timed; deck is a final-design candidate (founder assets missing); recordings and validation evidence are founder actions |

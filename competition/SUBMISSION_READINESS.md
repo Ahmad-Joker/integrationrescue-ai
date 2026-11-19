@@ -9,9 +9,9 @@ written but not proven.
 demo, 6-minute pitch containing the demo, Business Model Canvas, Agent Card. Prototype access must stay up through
 the end of the championship.
 
-**Latest CI:** commit `a3ffbcdba0db4a58ee4e0b870270b2e066b8d1a9`, run
-[44201542793](https://github.com/Ahmad-Joker/integrationrescue-ai/actions/runs/44201542793): backend, frontend
-and container jobs all successful. This session's changes are not pushed yet and have no CI run.
+**Latest CI:** commit `f275ca18982b43f6b6235de78a26b4f7070659d4`, run
+[44259070565](https://github.com/Ahmad-Joker/integrationrescue-ai/actions/runs/44259070565): backend, frontend
+and container jobs all successful.
 
 ## Readiness
 | Figure | Estimate | Basis |
@@ -42,7 +42,7 @@ videos (need Ahmad's face and voice), the founder contact details, and real inte
 | 14 | Innovation and defensibility (15%) | **PARTIAL** | COMPETITIVE_POSITIONING, COMPARISON_PROTOCOL, `comparison.py` | — | run the comparison (B6) | harness verified; no results |
 | 15 | Business viability and scalability (20%) | **PARTIAL** | PRICING (measured tokens), GO_TO_MARKET (Egypt → UK → UAE → global), MARKET_ANALYSIS | location and market-entry corrected | validate pricing (B5, B1) | proposed |
 | 16 | Pitch and communication (10%) | **PARTIAL** | scripts, deck, JUDGE_QA | timed, deck visuals | rehearse and record | proposed |
-| 17 | CI green on the current commit | **PASS for `a3ffbcd`**; pending for this session's commit | `.github/workflows/ci.yml` | — | push after OK (A2) | run 44201542793 |
+| 17 | CI green on the current commit | **PASS** for `f275ca1` | `.github/workflows/ci.yml` | — | — | run 44259070565 |
 | 18 | No secrets or private data committed | **PASS** | FINAL_RELEASE_CHECKLIST scan | re-scanned incl. screenshots and deck | B4 (`.claude/launch.json`) | verified |
 | 19 | Live AI distinguished from the baseline | **PASS** | UI banners, eval lab labels, deck slide 9 notes | — | — | verified (screenshots) |
 | 20 | Portal submission (4 Dec 2026 – 4 Jan 2027) | **USER ACTION** | USER_ACTIONS A9, A11 | — | submit | — |

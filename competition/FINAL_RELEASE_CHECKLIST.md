@@ -17,7 +17,7 @@ Details and exact commands: [docs/VERIFICATION_REPORT.md](../docs/VERIFICATION_R
 | 11 | Secrets and local paths | ✅ changed files, screenshots and the .pptx scanned: no keys, codes or personal email; the only local path is in `.claude/launch.json` (pre-existing, left out of the commit plan; USER_ACTIONS B4) |
 | 12 | Deck renders inspected | ✅ all 15 slides, three rounds (DECK_QA.md) |
 | 13 | Generated assets size | ✅ screenshots 1.9 MB, deck previews 1.1 MB, .pptx about 0.7 MB; no caches or build output staged |
-| 14 | `git diff` / `git status` inspected | ✅ no deletions, no history rewrite; nothing committed or pushed (awaiting founder OK) |
+| 14 | `git diff` / `git status` inspected | ✅ no deletions, no history rewrite; committed as five commits and pushed 2026-11-19 with founder OK; CI run 44259070565 green on `f275ca1` |
 | 15 | SUBMISSION_READINESS and USER_ACTIONS updated | ✅ |
 
 **Not ready for submission:** deployment, the two recordings, the contact email and real interviews are founder actions.
